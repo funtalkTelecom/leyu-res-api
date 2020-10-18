@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.leyu.mapper.RoleMapper" >
+
+    <select id="queryList" resultType="Role">
+         SELECT * FROM tb_role t  where 1=1
+        <if test="param!=null and param.name!=null and param.name!=''"> and t.name like "%"#{param.name}"%"</if>
+        ORDER BY id
+    </select>
+
+    <select id="queryRightByRoleId" resultType="Role">
+        SELECT A.id,b.id roleRightId,c.id rightId,c.type rightType,c.pid rightPid,c.name rightName
+        FROM tb_role a, tb_role_permission b, tb_permission c
+        WHERE a.id=b.role_id AND b.permission_id=c.id  AND A.id IN
+        <foreach collection="roleIdArray" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+    <delete id="deleteRoleRightByIdArray">
+  	 DELETE  FROM tb_role_permission  WHERE  id IN
+        <foreach collection="roleRightIdArray" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+  </delete>
+
+    <delete id="deleteRoleRightByRoleId" parameterType="java.lang.Integer">
+        DELETE  FROM tb_role_permission  WHERE  role_id =#{roleId}
+    </delete>
+
+    <insert id="insertBatchRoleRight">
+        insert into tb_role_permission (id,role_id,permission_id)
+        values
+        <foreach collection="roleRightIdArray" item="item" index="index"  separator="," close=";">
+            ( `nextval`('rbac_serial'),#{roleId},#{item})
+        </foreach>
+    </insert>
+</mapper>

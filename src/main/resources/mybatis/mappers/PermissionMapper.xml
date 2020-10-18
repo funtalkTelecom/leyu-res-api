@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.leyu.mapper.PermissionMapper">
+  <select id="listRole" resultType="java.util.HashMap">
+  	select concat(t.id,'') id, name from tb_role t where  t.status = 1
+  	<if test="name!=null">and t.name = #{name}</if>
+  </select>
+  <select id="rolePermissionCount" resultType="java.lang.Integer">
+  	select count(*) from tb_role_permission rp where rp.role_id=#{roleId} and rp.permission_id in (
+      <foreach collection="ids.split(',')" item="id" separator=",">
+          #{id}
+      </foreach>
+  	)
+  </select>
+  <select id="userPermissionCount" resultType="java.lang.Integer">
+  	select count(*) from tb_user_permission up where up.user_id=#{userId} and up.permission in (
+      <foreach collection="ids.split(',')" item="id" separator=",">
+          #{id}
+      </foreach>
+  	)
+  </select>
+  <select id="findRoleName" resultType="Role">
+  	select * from tb_role r where r.name = #{name} and r.status = 1
+  </select>
+  <insert id="addRole">
+  	insert into tb_role(id, name, status) values (`nextval`('rbac_serial'), #{role.name}, #{role.status})
+  </insert>
+  <delete id="deleByRoleId">
+  	delete rp from tb_role_permission rp where rp.role_id=#{roleId}
+  </delete>
+  <delete id="deleByUserId">
+  	delete up from tb_user_permission up where up.user_id=#{userId}
+  </delete>
+  <insert id="addRolePermission">
+  	insert into tb_role_permission(id, role_id, permission_id) values (`nextval`('rbac_serial'), #{param.roleId}, #{param.permission})
+  </insert>
+  <insert id="addUserPermission">
+  	insert into tb_user_permission(id, user_id, permission_id) values (`nextval`('rbac_serial'), #{param.userId}, #{param.permission})
+  </insert>
+
+  <select id="getPermissionByUserId" resultType="Permission">
+      SELECT e.* FROM tb_user a,tb_user_role b,tb_role_permission d, tb_permission e
+        WHERE a.id = b.user_id
+        AND b.role_id=d.role_id
+        AND d.permission_id = e.id
+        AND a.id=#{userId} ORDER BY e.id
+  </select>
+
+    <select id="queryList" resultType="Permission">
+         SELECT * FROM tb_permission where 1=1
+        <if test="param !=null and  param.includeTopMenu !=null and param.includeTopMenu=='0'"> and id != 0</if>
+        ORDER BY id
+    </select>
+
+</mapper>

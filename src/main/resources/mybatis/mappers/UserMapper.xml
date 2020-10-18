@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.leyu.mapper.UserMapper" >
+
+    <resultMap id="baseResultMap" type="java.util.HashMap">
+        <result column="id" property="id" />
+        <result column="type" property="type" />
+        <result column="login_name" property="loginName" />
+        <result column="password" property="password" />
+        <result column="name" property="name" />
+        <result column="phone" property="phone" />
+        <result column="email" property="email" />
+        <result column="status" property="status" />
+        <result column="create_time" property="createTime" />
+        <result column="idcard" property="idcard" />
+        <result column="last_login_time" property="lastLoginTime" />
+        <collection property="userRoles" ofType="Role" column="{userId=id}" select="selectRoleByUserId"/>
+    </resultMap>
+
+  <select id="getPower" resultType="java.util.HashMap">
+  	select p.id, p.name, p.url, p.id, p.pid, p.grade, p.seq from tb_permission p
+				 where (exists(select 1 from tb_role_permission rp,tb_user_role ur
+				 where p.id = rp.permission and rp.role_id = ur.role_id and ur.user_id = #{id} )
+				 or exists(select 1 from tb_user_permission up where p.id = up.permission and up.user_id = #{id} )) order by p.seq
+  </select>
+
+  <select id="findRoles" resultType="java.lang.String">
+  	select r.name from tb_user_role ur, tb_role r where ur.role_id = r.id and ur.user_id = #{id}
+  </select>
+
+  <select id="finRolesByUserId" resultType="java.util.HashMap">
+  	select concat(r.id,'') id, r.name name, ur.user_id userid  from tb_role r left join tb_user_role ur on r.id = ur.role_id and ur.user_id = #{id} order by r.id desc
+  </select>
+
+  <delete id="deleteRoleByUserId">
+  	delete ur from tb_user_role ur where ur.user_id = #{userId}
+  </delete>
+
+  <insert id="insertUserRole">
+  	insert into tb_user_role(id,user_id,role_id) VALUES
+      <foreach collection="userRoleIdArray" item="item" index="index"  separator="," close=";">
+          (nextval('rbac_serial'),#{userId},#{item})
+      </foreach>
+  </insert>
+
+    <select id="queryPageList" resultMap="baseResultMap">
+        SELECT id,t.type,login_name,password,t.name,phone,email,t.status,create_time,idcard,last_login_time
+        FROM tb_user t  where 1=1
+        <if test="param.name!=null and param.name!=''"> and t.name like "%"#{param.name}"%"</if>
+        <if test="param.loginName!=null and param.loginName!=''"> and t.login_name like "%"#{param.loginName}"%"</if>
+        order by id desc
+    </select>
+
+    <select id="selectRoleByUserId" resultType="com.leyu.pojo.Role">
+       SELECT c.* FROM  tb_user a, tb_user_role b,tb_role c WHERE a.id=b.user_id AND b.role_id=c.id and a.id=#{userId}
+    </select>
+
+
+
+
+</mapper>
