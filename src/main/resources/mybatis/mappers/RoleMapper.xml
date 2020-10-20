@@ -2,16 +2,16 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.leyu.mapper.RoleMapper" >
 
-    <select id="queryList" resultType="Role">
+    <select id="queryList" resultType="com.leyu.pojo.Role">
          SELECT * FROM tb_role t  where 1=1
         <if test="param!=null and param.name!=null and param.name!=''"> and t.name like "%"#{param.name}"%"</if>
         ORDER BY id
     </select>
 
-    <select id="queryRightByRoleId" resultType="Role">
-        SELECT A.id,b.id roleRightId,c.id rightId,c.type rightType,c.pid rightPid,c.name rightName
+    <select id="queryRightByRoleId" resultType="com.leyu.pojo.Role">
+        SELECT a.id,b.id roleRightId,c.id rightId,c.type rightType,c.pid rightPid,c.name rightName
         FROM tb_role a, tb_role_permission b, tb_permission c
-        WHERE a.id=b.role_id AND b.permission_id=c.id  AND A.id IN
+        WHERE a.id=b.role_id AND b.permission_id=c.id  AND a.id IN
         <foreach collection="roleIdArray" item="item" index="index" open="(" close=")" separator=",">
             #{item}
         </foreach>

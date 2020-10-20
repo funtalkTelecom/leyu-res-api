@@ -19,7 +19,7 @@
       </foreach>
   	)
   </select>
-  <select id="findRoleName" resultType="Role">
+  <select id="findRoleName" resultType="com.leyu.pojo.Role">
   	select * from tb_role r where r.name = #{name} and r.status = 1
   </select>
   <insert id="addRole">
@@ -38,7 +38,7 @@
   	insert into tb_user_permission(id, user_id, permission_id) values (`nextval`('rbac_serial'), #{param.userId}, #{param.permission})
   </insert>
 
-  <select id="getPermissionByUserId" resultType="Permission">
+  <select id="getPermissionByUserId" resultType="com.leyu.pojo.Permission">
       SELECT e.* FROM tb_user a,tb_user_role b,tb_role_permission d, tb_permission e
         WHERE a.id = b.user_id
         AND b.role_id=d.role_id
@@ -46,7 +46,7 @@
         AND a.id=#{userId} ORDER BY e.id
   </select>
 
-    <select id="queryList" resultType="Permission">
+    <select id="queryList" resultType="com.leyu.pojo.Permission">
          SELECT * FROM tb_permission where 1=1
         <if test="param !=null and  param.includeTopMenu !=null and param.includeTopMenu=='0'"> and id != 0</if>
         ORDER BY id
