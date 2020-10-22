@@ -2,11 +2,11 @@ package com.leyu.controller;
 
 import com.leyu.config.annotation.Powers;
 import com.leyu.dto.Result;
-import com.leyu.utils.PowerConsts;
-import com.leyu.utils.ReqLimitUtils;
 import com.leyu.pojo.User;
 import com.leyu.service.RoleRightService;
 import com.leyu.service.UserService;
+import com.leyu.utils.PowerConsts;
+import com.leyu.utils.ReqLimitUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,18 +30,18 @@ public class UserController {
 	@RequestMapping("/login")
 	@Powers({PowerConsts.NOLOGINPOWER})
 	public Result login(@RequestBody User user) throws IOException,
-			NoSuchAlgorithmException{
+			NoSuchAlgorithmException {
 
-		Result  result;
-		int limitResult=ReqLimitUtils.residualReqNum("login",
-				     new ReqLimitUtils.ReqLimit("yes","login",1L,6,0L));
+		Result result;
+		int limitResult = ReqLimitUtils.residualReqNum("login",
+				new ReqLimitUtils.ReqLimit("yes", "login", 1L, 6, 0L));
 
-		if(limitResult<=0){
-			return new Result(Result.WARN,"登录频繁,已限制登录,请稍后再试");
+		if (limitResult <= 0) {
+			return new Result(Result.WARN, "登录频繁,已限制登录,请稍后再试");
 		}
 
-		if (StringUtils.isBlank(user.getLoginName())) return   new Result(Result.WARN,"用户名为空!");
-		if (StringUtils.isBlank(user.getPassword())) return   new Result(Result.WARN,"密码为空!");
+		if (StringUtils.isBlank(user.getLoginName())) return new Result(Result.WARN, "用户名为空!");
+		if (StringUtils.isBlank(user.getPassword())) return new Result(Result.WARN, "密码为空!");
 
 		result = userService.login(user.getLoginName(), user.getPassword());
 
