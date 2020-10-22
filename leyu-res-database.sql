@@ -139,6 +139,45 @@ CREATE TABLE `tb_user_role` (
   UNIQUE KEY `uni1` (`user_id`,`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
+
+DROP TABLE IF EXISTS `tb_city`;
+CREATE TABLE `tb_city`  (
+  `id` int(11) NOT NULL DEFAULT 0,
+  `name` varchar(255)  NULL DEFAULT '',
+  `full_name` varchar(255)  NULL DEFAULT '',
+  `acronym` varchar(255) NULL DEFAULT '',
+  `pid` int(11) NULL DEFAULT 0,
+  `grade` int(10) NULL DEFAULT 0,
+  `is_del` int(1) NULL DEFAULT 0,
+  `zip_code` varchar(255)  NULL DEFAULT '',
+  `area_code` varchar(255)  NULL DEFAULT ''
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB ROW_FORMAT = Compact;
+
+DROP TABLE IF EXISTS `tb_corporation`;
+CREATE TABLE `tb_corporation`  (
+  `id` int(11) NOT NULL DEFAULT 0,
+  `name` varchar(32) NOT NULL DEFAULT '',
+  `short_name` varchar(16)  NULL DEFAULT '',
+  `business_license` varchar(32) NULL DEFAULT '',
+  `business_license_img` varchar(32) NULL DEFAULT '',
+  `contacts` varchar(32) NULL DEFAULT '',
+  `phone` varchar(32) NULL DEFAULT '',
+  `email` varchar(32) NULL DEFAULT '',
+  `province` int(11) NULL DEFAULT 0,
+  `city` int(10) NULL DEFAULT 0,
+  `district` int(10) NULL DEFAULT 0,
+  `address` varchar(32) NULL DEFAULT '',
+  `status` int(1) NULL DEFAULT 0,
+  `is_del` int(1) NULL DEFAULT 0,
+  `address` varchar(32) NULL DEFAULT '',
+  `remark` varchar(64)  NULL DEFAULT '',
+  `add_date` datetime  NULL DEFAULT ''
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB ROW_FORMAT = Compact;
+
+
+
 /*Data for the table `tb_user_role` */
 
 insert  into `tb_user_role`(`id`,`user_id`,`role_id`,`remark`) values (100181,10001013,10003,NULL),(100293,10010003,10003,NULL),(100294,10010003,10013,NULL),(100295,10010003,10005,NULL),(10001000,10010002,10002,NULL);
