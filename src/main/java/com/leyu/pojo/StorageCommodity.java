@@ -1,5 +1,7 @@
 package com.leyu.pojo;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.math.BigDecimal;
@@ -7,6 +9,7 @@ import java.math.BigDecimal;
 @Table(name = "tb_storage_commodity")
 public class StorageCommodity  extends BasePojo implements java.io.Serializable{
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String source;
