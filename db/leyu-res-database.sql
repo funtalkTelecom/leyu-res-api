@@ -205,3 +205,161 @@ BEGIN
      RETURN currval(seq_name); 
 END */$$
 DELIMITER ;
+
+
+
+
+-- 2020.10.26 start
+INSERT INTO `tb_permission`(`id`, `type`, `pid`, `name`, `code`, `icon`, `url`, `seq`)
+VALUES (40, 1, 0, '订单管理', NULL, '', '', 1);
+INSERT INTO `tb_permission`(`id`, `type`, `pid`, `name`, `code`, `icon`, `url`, `seq`)
+VALUES (4001, 2, 40, '写卡订单', NULL, 'el-icon-menu', 'order_wsim', 1);
+INSERT INTO `tb_permission`(`id`, `type`, `pid`, `name`, `code`, `icon`, `url`, `seq`)
+VALUES (4002, 2, 40, '采购订单', NULL, 'el-icon-menu', 'order_commodity', 1);
+
+INSERT INTO `tb_permission`(`id`, `type`, `pid`, `name`, `code`, `icon`, `url`, `seq`)
+VALUES (30, 1, 0, '仓储管理', NULL, '', '', 1);
+INSERT INTO `tb_permission`(`id`, `type`, `pid`, `name`, `code`, `icon`, `url`, `seq`)
+VALUES (3001, 2, 30, '库存管理', NULL, 'el-icon-menu', 'storage_stock', 1);
+INSERT INTO `tb_permission`(`id`, `type`, `pid`, `name`, `code`, `icon`, `url`, `seq`)
+VALUES (3002, 2, 30, '序列查询', NULL, 'el-icon-menu', 'storage_serial', 1);
+INSERT INTO `tb_permission`(`id`, `type`, `pid`, `name`, `code`, `icon`, `url`, `seq`)
+VALUES (3003, 2, 30, '仓库管理', NULL, 'el-icon-menu', 'storage_store', 1);
+INSERT INTO `tb_permission`(`id`, `type`, `pid`, `name`, `code`, `icon`, `url`, `seq`)
+VALUES (3004, 2, 30, '采购管理', NULL, 'el-icon-menu', 'storage_purchase', 1);
+INSERT INTO `tb_permission`(`id`, `type`, `pid`, `name`, `code`, `icon`, `url`, `seq`)
+VALUES (300401, 3, 3004, '添加', 'storage_purchase_add', '', '', 1);
+INSERT INTO `tb_permission`(`id`, `type`, `pid`, `name`, `code`, `icon`, `url`, `seq`)
+VALUES (300402, 3, 3004, '审核', 'storage_purchase_audit', '', '', 1);
+
+INSERT INTO `tb_permission`(`id`, `type`, `pid`, `name`, `code`, `icon`, `url`, `seq`)
+VALUES (3005, 2, 30, '销售管理', NULL, 'el-icon-menu', 'storage_sell', 1);
+
+
+CREATE TABLE `tb_storage_store`  (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `corp_id` int NOT NULL COMMENT '商家',
+  `name` varchar(32) NOT NULL COMMENT '库名',
+  `is_default` tinyint(1) NULL COMMENT '是否默认1是0否',
+  `service` tinyint(1) NULL COMMENT '对外服务1是0否',
+  `contacts` varchar(16) NULL COMMENT '联系人',
+  `phone` varchar(16) NULL COMMENT '联系电话',
+  `province` varchar(10) NULL COMMENT '省',
+  `city` varchar(10) NULL COMMENT '市',
+  `district` varchar(10) NULL COMMENT '区',
+  `add_date` datetime NULL COMMENT '添加时间',
+  PRIMARY KEY (`id`)
+);
+
+ALTER TABLE `tb_storage_store`
+MODIFY COLUMN `id` int(11) NOT NULL FIRST;
+ALTER TABLE `tb_storage_store`
+ADD COLUMN `is_del` tinyint(1) NULL DEFAULT 0 COMMENT '1删除0正常' AFTER `add_date`;
+
+CREATE TABLE `tb_storage_stock`  (
+  `id` int NOT NULL,
+  `corp_id` int NOT NULL COMMENT '商家',
+  `corp_name` varchar(32) NOT NULL COMMENT '商家',
+  `commodity_id` int NOT NULL COMMENT '商品',
+  `commodity` varchar(64) NOT NULL COMMENT '商品',
+  `store_id` int NOT NULL COMMENT '仓库',
+  `store` varchar(32) NOT NULL COMMENT '仓库',
+  `total_quantity` int(10) NOT NULL COMMENT '总库存',
+  `usable_quantity` int(10) NOT NULL COMMENT '可用库存',
+  `freeze_quantity` int(10) NOT NULL COMMENT '冻结库存',
+  `cost_price` decimal(10, 2) NULL COMMENT '库存价值',
+  `retail1_price` decimal(10, 2) NULL COMMENT '零售价',
+  `note` varchar(255) NULL COMMENT '摘要',
+  `add_date` datetime NOT NULL COMMENT '添加时间',
+  `is_del` tinyint(1) NOT NULL COMMENT '1删除0正常',
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `tb_storage_purchase`  (
+  `id` int NOT NULL,
+  `mold` tinyint(1) NOT NULL COMMENT '模型1入库;2退库',
+  `supply_corp_id` int(10) NOT NULL COMMENT '添加时间',
+  `supply_corp` varchar(32) NOT NULL,
+  `purchase_corp_id` int(10) NOT NULL,
+  `purchase_corp` varchar(32) NOT NULL,
+  `store_id` int NOT NULL,
+  `status` tinyint(1) NOT NULL,
+  `applicant` int(10) NULL,
+  `apply_date` datetime NULL,
+  `apply_note` varchar(128) NULL,
+  `auditor` int(10) NULL,
+  `audit_date` datetime NULL,
+  `audit_note` varchar(128) NULL,
+  `is_del` tinyint(1) NOT NULL COMMENT '1删除0正常',
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `tb_storage_sell`  (
+  `id` int NOT NULL,
+  `mold` tinyint(1) NOT NULL COMMENT '模型1销售;2退货',
+  `source` varchar(16) NOT NULL COMMENT '来源渠道',
+  `source_id` int(10) NOT NULL COMMENT '资源ID',
+  `supply_corp_id` int(10) NOT NULL COMMENT '供应商家',
+  `supply_corp` varchar(32) NOT NULL COMMENT '供应商家',
+  `purchase_corp_id` int(10) NOT NULL COMMENT '采购商家',
+  `purchase_corp` varchar(32) NOT NULL COMMENT '采购商家',
+  `status` tinyint(1) NOT NULL COMMENT '状态1待截单2备货3已出货4待撤销5已撤销',
+  `print_count` tinyint(1) NULL COMMENT '打印次数',
+  `address_id` int(10) NULL COMMENT '地址ID',
+  `person_name` varchar(16) NULL COMMENT '收件人',
+  `person_tel` varchar(16) NULL COMMENT '收件电话',
+  `address` varchar(128) NULL COMMENT '收货地址',
+  `express_id` int NULL COMMENT '快递编码',
+  `express_name` varchar(16) NULL COMMENT '快递公司',
+  `express_number` varchar(16) NULL COMMENT '快递单号',
+  `note` varchar(128) NULL COMMENT '备货备注',
+  `unote` varchar(128) NULL COMMENT '用户备注',
+  `is_del` tinyint(1) NULL DEFAULT 0 COMMENT '1删除0正常',
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `tb_storage_commodity`  (
+  `id` int NOT NULL,
+  `source` varchar(16) NULL COMMENT '来源[采购|销售|开卡]',
+  `source_id` int(10) NULL COMMENT '资源ID',
+  `match_phone` tinyint(1) NULL COMMENT '是否匹配号码1是0否',
+  `commodity_id` int(10) NULL COMMENT '商品',
+  `commodity` varchar(64) NULL COMMENT '商品',
+  `quantity` int(10) NULL COMMENT '数量,负数为逆向操作',
+  `price` decimal(10, 2) NULL COMMENT '价格',
+  `note` varchar(255) NULL COMMENT '摘要',
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `tb_storage_commodity_phone`  (
+  `id` int NOT NULL,
+  `storage_commodity_id` int(10) NULL,
+  `phone` varchar(11) NULL,
+  `serial_id` int(10) NULL,
+  PRIMARY KEY (`id`)
+);
+
+ALTER TABLE `tb_storage_commodity_phone`
+ADD INDEX `storage_commodity_phone1027`(`storage_commodity_id`) USING BTREE,
+ADD INDEX `storage_commodity_phone_serial1027`(`serial_id`) USING BTREE;
+
+CREATE TABLE `tb_storage_serial`  (
+  `id` int NOT NULL,
+  `storage_store_id` int NULL COMMENT '库存编号',
+  `mold` tinyint(1) NULL COMMENT '模型1iccid;2cardid',
+  `serial` varchar(32) NULL COMMENT '序列号',
+  `quantity` int(10) NULL COMMENT '数量',
+  `freeze` tinyint(1) NULL COMMENT '1冻结0可用;冻结不可操作',
+  `status` tinyint(1) NULL COMMENT '状态1预入2在库3预出4已出/用',
+  `in_storage_commodity_id` int(10) NULL COMMENT '入库源ID',
+  `out_storage_commodity_id` int(10) NULL COMMENT '出库源ID',
+  PRIMARY KEY (`id`),
+  INDEX `storage_serial102701`(`storage_store_id`) USING BTREE,
+  INDEX `storage_serial102702`(`in_storage_commodity_id`) USING BTREE,
+  INDEX `storage_serial102703`(`out_storage_commodity_id`) USING BTREE,
+  INDEX `storage_serial102704`(`serial`) USING BTREE
+);
+
+
+-- 2020.10.26 end
+
