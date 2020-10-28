@@ -278,21 +278,22 @@ CREATE TABLE `tb_storage_stock`  (
 CREATE TABLE `tb_storage_purchase`  (
   `id` int NOT NULL,
   `mold` tinyint(1) NOT NULL COMMENT '模型1入库;2退库',
-  `supply_corp_id` int(10) NOT NULL COMMENT '添加时间',
-  `supply_corp` varchar(32) NOT NULL,
-  `purchase_corp_id` int(10) NOT NULL,
-  `purchase_corp` varchar(32) NOT NULL,
-  `store_id` int NOT NULL,
-  `status` tinyint(1) NOT NULL,
-  `applicant` int(10) NULL,
-  `apply_date` datetime NULL,
-  `apply_note` varchar(128) NULL,
-  `auditor` int(10) NULL,
-  `audit_date` datetime NULL,
-  `audit_note` varchar(128) NULL,
+  `supply_corp_id` int(10) NOT NULL COMMENT '供应商家',
+  `supply_corp` varchar(32) NOT NULL COMMENT '供应商家',
+  `purchase_corp_id` int(10) NOT NULL COMMENT '采购商家',
+  `purchase_corp` varchar(32) NOT NULL COMMENT '采购商家',
+  `store_id` int NOT NULL COMMENT '仓库',
+  `status` tinyint(1) NOT NULL  COMMENT '状态1申请中2已入库3已拒绝',
+  `applicant` int(10) NULL COMMENT '申请者',
+  `apply_date` datetime NULL COMMENT '申请时间',
+  `apply_note` varchar(128) NULL COMMENT '申请时间',
+  `auditor` int(10) NULL COMMENT '审核人',
+  `audit_date` datetime NULL COMMENT '审核时间',
+  `audit_note` varchar(128) NULL COMMENT '审核时间',
   `is_del` tinyint(1) NOT NULL COMMENT '1删除0正常',
   PRIMARY KEY (`id`)
 );
+
 
 CREATE TABLE `tb_storage_sell`  (
   `id` int NOT NULL,
@@ -362,4 +363,29 @@ CREATE TABLE `tb_storage_serial`  (
 
 
 -- 2020.10.26 end
+
+ALTER TABLE `tb_storage_store`
+ADD COLUMN `address` varchar(64) NULL COMMENT '街道' AFTER `district`;
+ALTER TABLE `tb_storage_store`
+MODIFY COLUMN `province` int(10) NULL DEFAULT NULL COMMENT '省' AFTER `phone`,
+MODIFY COLUMN `city` int(10) NULL DEFAULT NULL COMMENT '市' AFTER `province`,
+MODIFY COLUMN `district` int(10) NULL DEFAULT NULL COMMENT '区' AFTER `city`;
+
+ALTER TABLE `tb_storage_stock`
+ADD UNIQUE INDEX `stock_unique1027`(`corp_id`, `commodity_id`, `store_id`, `is_del`) USING BTREE;
+
+ALTER TABLE `tb_storage_serial`
+CHANGE COLUMN `storage_store_id` `storage_stock_id` int(11) NULL DEFAULT NULL COMMENT '库存编号' AFTER `id`;
+
+ALTER TABLE `tb_storage_commodity`
+ADD COLUMN `storage_stock_id` int(11) NULL COMMENT '库存编号' AFTER `id`;
+
+ALTER TABLE `tb_storage_commodity`
+ADD COLUMN `commodity_mold` tinyint(1) NULL COMMENT '1有序列号0无序列号' AFTER `match_phone`;
+
+ALTER TABLE `tb_storage_sell`
+ADD COLUMN `create_date` datetime NULL COMMENT '创建时间' AFTER `unote`,
+ADD COLUMN `pickup_date` datetime NULL COMMENT '创建时间' AFTER `create_date`,
+ADD COLUMN `apply_cancel_date` datetime NULL COMMENT '申请撤销' AFTER `pickup_date`,
+ADD COLUMN `complete_date` datetime NULL COMMENT '发货或者确认撤销' AFTER `apply_cancel_date`;
 

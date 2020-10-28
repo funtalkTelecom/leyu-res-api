@@ -1,10 +1,8 @@
 package com.leyu.pojo;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Table(name = "tb_storage_commodity")
 public class StorageCommodity  extends BasePojo implements java.io.Serializable{
@@ -12,11 +10,15 @@ public class StorageCommodity  extends BasePojo implements java.io.Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    private Integer storageStockId;
+
     private String source;
 
     private Integer sourceId;
 
     private Boolean matchPhone;
+    //1有序列号0无序列号
+    private Integer commodityMold;
 
     private Integer commodityId;
 
@@ -28,8 +30,26 @@ public class StorageCommodity  extends BasePojo implements java.io.Serializable{
 
     private String note;
 
-    public StorageCommodity(Integer id, String source, Integer sourceId, Boolean matchPhone, Integer commodityId, String commodity, Integer quantity, BigDecimal price, String note) {
+    @Transient
+    private String serials;
+    @Transient
+    private List<String> serialList;
+    @Transient
+    private Integer serialMold;
+
+    public StorageCommodity(Integer storageStockId, String source, Integer sourceId,Integer commodityId, String commodity, Integer quantity) {
+        this.storageStockId=storageStockId;
+        this.source = source;
+        this.sourceId = sourceId;
+        this.matchPhone = false;
+        this.commodityId = commodityId;
+        this.commodity = commodity;
+        this.quantity = quantity;
+    }
+
+    public StorageCommodity(Integer id,Integer storageStockId, String source, Integer sourceId, Boolean matchPhone, Integer commodityId, String commodity, Integer quantity, BigDecimal price, String note) {
         this.id = id;
+        this.storageStockId=storageStockId;
         this.source = source;
         this.sourceId = sourceId;
         this.matchPhone = matchPhone;
@@ -114,5 +134,45 @@ public class StorageCommodity  extends BasePojo implements java.io.Serializable{
 
     public void setNote(String note) {
         this.note = note == null ? null : note.trim();
+    }
+
+    public Integer getStorageStockId() {
+        return storageStockId;
+    }
+
+    public void setStorageStockId(Integer storageStockId) {
+        this.storageStockId = storageStockId;
+    }
+
+    public String getSerials() {
+        return serials;
+    }
+
+    public void setSerials(String serials) {
+        this.serials = serials;
+    }
+
+    public Integer getCommodityMold() {
+        return commodityMold;
+    }
+
+    public void setCommodityMold(Integer commodityMold) {
+        this.commodityMold = commodityMold;
+    }
+
+    public Integer getSerialMold() {
+        return serialMold;
+    }
+
+    public void setSerialMold(Integer serialMold) {
+        this.serialMold = serialMold;
+    }
+
+    public List<String> getSerialList() {
+        return serialList;
+    }
+
+    public void setSerialList(List<String> serialList) {
+        this.serialList = serialList;
     }
 }

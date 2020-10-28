@@ -24,17 +24,19 @@ public class StorageStore  extends BasePojo implements java.io.Serializable{
 
     private String phone;
 
-    private String province;
+    private Integer province;
 
-    private String city;
+    private Integer city;
 
-    private String district;
+    private Integer district;
+
+    private String address;
 
     private Date addDate;
 
     private Boolean isDel;
 
-    public StorageStore(Integer id, Integer corpId, String name, Integer isDefault, Integer service, String contacts, String phone, String province, String city, String district, Date addDate, Boolean isDel) {
+    public StorageStore(Integer id, Integer corpId, String name, Integer isDefault, Integer service, String contacts, String phone, Integer province, Integer city, Integer district, Date addDate, Boolean isDel) {
         this.id = id;
         this.corpId = corpId;
         this.name = name;
@@ -74,7 +76,7 @@ public class StorageStore  extends BasePojo implements java.io.Serializable{
     }
 
     public void setName(String name) {
-        this.name = name == null ? null : name.trim();
+        this.name = name;
     }
 
     public Integer getIsDefault() {
@@ -83,6 +85,10 @@ public class StorageStore  extends BasePojo implements java.io.Serializable{
 
     public void setIsDefault(Integer isDefault) {
         this.isDefault = isDefault;
+    }
+
+    public Integer getService() {
+        return service;
     }
 
     public void setService(Integer service) {
@@ -94,7 +100,7 @@ public class StorageStore  extends BasePojo implements java.io.Serializable{
     }
 
     public void setContacts(String contacts) {
-        this.contacts = contacts == null ? null : contacts.trim();
+        this.contacts = contacts;
     }
 
     public String getPhone() {
@@ -102,31 +108,39 @@ public class StorageStore  extends BasePojo implements java.io.Serializable{
     }
 
     public void setPhone(String phone) {
-        this.phone = phone == null ? null : phone.trim();
+        this.phone = phone;
     }
 
-    public String getProvince() {
+    public Integer getProvince() {
         return province;
     }
 
-    public void setProvince(String province) {
-        this.province = province == null ? null : province.trim();
+    public void setProvince(Integer province) {
+        this.province = province;
     }
 
-    public String getCity() {
+    public Integer getCity() {
         return city;
     }
 
-    public void setCity(String city) {
-        this.city = city == null ? null : city.trim();
+    public void setCity(Integer city) {
+        this.city = city;
     }
 
-    public String getDistrict() {
+    public Integer getDistrict() {
         return district;
     }
 
-    public void setDistrict(String district) {
-        this.district = district == null ? null : district.trim();
+    public void setDistrict(Integer district) {
+        this.district = district;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public Date getAddDate() {
@@ -137,11 +151,11 @@ public class StorageStore  extends BasePojo implements java.io.Serializable{
         this.addDate = addDate;
     }
 
-    public Boolean getIsDel() {
+    public Boolean getDel() {
         return isDel;
     }
 
-    public void setIsDel(Boolean isDel) {
-        this.isDel = isDel;
+    public void setDel(Boolean del) {
+        isDel = del;
     }
 }

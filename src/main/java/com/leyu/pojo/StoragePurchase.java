@@ -1,10 +1,9 @@
 package com.leyu.pojo;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Table(name = "tb_storage_purchase")
 public class StoragePurchase  extends BasePojo implements java.io.Serializable{
@@ -39,6 +38,23 @@ public class StoragePurchase  extends BasePojo implements java.io.Serializable{
     private String auditNote;
 
     private Boolean isDel;
+
+    @Transient
+    private List<StorageCommodity> storageCommodityList=new ArrayList<>();
+
+    public StoragePurchase(Integer mold, Integer supplyCorpId, String supplyCorp, Integer purchaseCorpId, String purchaseCorp, Integer storeId, Integer status, Integer applicant, Date applyDate, String applyNote) {
+        this.mold = mold;
+        this.supplyCorpId = supplyCorpId;
+        this.supplyCorp = supplyCorp;
+        this.purchaseCorpId = purchaseCorpId;
+        this.purchaseCorp = purchaseCorp;
+        this.storeId = storeId;
+        this.status = status;
+        this.applicant = applicant;
+        this.applyDate = applyDate;
+        this.applyNote = applyNote;
+        this.isDel = false;
+    }
 
     public StoragePurchase(Integer id, Integer mold, Integer supplyCorpId, String supplyCorp, Integer purchaseCorpId, String purchaseCorp, Integer storeId, Integer status, Integer applicant, Date applyDate, String applyNote, Integer auditor, Date auditDate, String auditNote, Boolean isDel) {
         this.id = id;
@@ -180,5 +196,13 @@ public class StoragePurchase  extends BasePojo implements java.io.Serializable{
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public List<StorageCommodity> getStorageCommodityList() {
+        return storageCommodityList;
+    }
+
+    public void setStorageCommodityList(List<StorageCommodity> storageCommodityList) {
+        this.storageCommodityList = storageCommodityList;
     }
 }

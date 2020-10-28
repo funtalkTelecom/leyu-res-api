@@ -1,16 +1,16 @@
 package com.leyu.pojo;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Table(name = "tb_storage_sell")
 public class StorageSell  extends BasePojo implements java.io.Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
+    //模型1销售;2退货
     private Integer mold;
 
     private String source;
@@ -24,6 +24,8 @@ public class StorageSell  extends BasePojo implements java.io.Serializable{
     private Integer purchaseCorpId;
 
     private String purchaseCorp;
+
+    private Integer storeId;
 
     private Integer status;
 
@@ -47,7 +49,37 @@ public class StorageSell  extends BasePojo implements java.io.Serializable{
 
     private String unote;
 
+
+    private Date createDate;
+    //备货时间
+    private Date pickupDate;
+    //申请撤销
+    private Date applyCancelDate;
+    //完成备货或者确认撤销
+    private Date completeDate;
+
     private Boolean isDel;
+
+    @Transient
+    private List<StorageCommodity> storageCommodityList=new ArrayList<>();
+
+    public StorageSell(Integer mold, String source, Integer sourceId, Integer supplyCorpId, String supplyCorp, Integer purchaseCorpId, String purchaseCorp, Integer status,Integer addressId, String personName, String personTel, String address,String unote) {
+        this.mold = mold;
+        this.source = source;
+        this.sourceId = sourceId;
+        this.supplyCorpId = supplyCorpId;
+        this.supplyCorp = supplyCorp;
+        this.purchaseCorpId = purchaseCorpId;
+        this.purchaseCorp = purchaseCorp;
+        this.printCount = 0;
+        this.status=status;
+        this.addressId = addressId;
+        this.personName = personName;
+        this.personTel = personTel;
+        this.address = address;
+        this.unote = unote;
+        this.isDel = false;
+    }
 
     public StorageSell(Integer id, Integer mold, String source, Integer sourceId, Integer supplyCorpId, String supplyCorp, Integer purchaseCorpId, String purchaseCorp, Integer status, Integer printCount, Integer addressId, String personName, String personTel, String address, Integer expressId, String expressName, String expressNumber, String note, String unote, Boolean isDel) {
         this.id = id;
@@ -234,5 +266,53 @@ public class StorageSell  extends BasePojo implements java.io.Serializable{
 
     public void setPrintCount(Integer printCount) {
         this.printCount = printCount;
+    }
+
+    public List<StorageCommodity> getStorageCommodityList() {
+        return storageCommodityList;
+    }
+
+    public void setStorageCommodityList(List<StorageCommodity> storageCommodityList) {
+        this.storageCommodityList = storageCommodityList;
+    }
+
+    public Integer getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(Integer storeId) {
+        this.storeId = storeId;
+    }
+
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+
+    public Date getPickupDate() {
+        return pickupDate;
+    }
+
+    public void setPickupDate(Date pickupDate) {
+        this.pickupDate = pickupDate;
+    }
+
+    public Date getApplyCancelDate() {
+        return applyCancelDate;
+    }
+
+    public void setApplyCancelDate(Date applyCancelDate) {
+        this.applyCancelDate = applyCancelDate;
+    }
+
+    public Date getCompleteDate() {
+        return completeDate;
+    }
+
+    public void setCompleteDate(Date completeDate) {
+        this.completeDate = completeDate;
     }
 }

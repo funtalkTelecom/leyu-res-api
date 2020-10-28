@@ -8,7 +8,7 @@ public class StorageSerial  extends BasePojo implements java.io.Serializable{
     @Id
     private Integer id;
 
-    private Integer storageStoreId;
+    private Integer storageStockId;
 
     private Integer mold;
 
@@ -24,9 +24,19 @@ public class StorageSerial  extends BasePojo implements java.io.Serializable{
 
     private Integer outStorageCommodityId;
 
-    public StorageSerial(Integer id, Integer storageStoreId, Integer mold, String serial, Integer quantity, Integer freeze, Integer status, Integer inStorageCommodityId, Integer outStorageCommodityId) {
+    public StorageSerial(Integer storageStockId, Integer mold, String serial, Integer quantity, Integer freeze, Integer status, Integer inStorageCommodityId) {
+        this.storageStockId = storageStockId;
+        this.mold = mold;
+        this.serial = serial;
+        this.quantity = quantity;
+        this.freeze = freeze;
+        this.status = status;
+        this.inStorageCommodityId = inStorageCommodityId;
+    }
+
+    public StorageSerial(Integer id, Integer storageStockId, Integer mold, String serial, Integer quantity, Integer freeze, Integer status, Integer inStorageCommodityId, Integer outStorageCommodityId) {
         this.id = id;
-        this.storageStoreId = storageStoreId;
+        this.storageStockId = storageStockId;
         this.mold = mold;
         this.serial = serial;
         this.quantity = quantity;
@@ -48,12 +58,12 @@ public class StorageSerial  extends BasePojo implements java.io.Serializable{
         this.id = id;
     }
 
-    public Integer getStorageStoreId() {
-        return storageStoreId;
+    public Integer getStorageStockId() {
+        return storageStockId;
     }
 
-    public void setStorageStoreId(Integer storageStoreId) {
-        this.storageStoreId = storageStoreId;
+    public void setStorageStockId(Integer storageStockId) {
+        this.storageStockId = storageStockId;
     }
 
     public String getSerial() {
