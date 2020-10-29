@@ -389,3 +389,5 @@ ADD COLUMN `pickup_date` datetime NULL COMMENT '创建时间' AFTER `create_date
 ADD COLUMN `apply_cancel_date` datetime NULL COMMENT '申请撤销' AFTER `pickup_date`,
 ADD COLUMN `complete_date` datetime NULL COMMENT '发货或者确认撤销' AFTER `apply_cancel_date`;
 
+ALTER TABLE `tb_storage_serial`
+MODIFY COLUMN `id` int(11) NOT NULL AUTO_INCREMENT FIRST;

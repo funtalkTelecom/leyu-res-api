@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.leyu.config.advice.ServiceException;
 import com.leyu.dto.Result;
 import com.leyu.mapper.StoragePurchaseMapper;
+import com.leyu.mapper.StorageStockMapper;
 import com.leyu.pojo.StorageCommodity;
 import com.leyu.pojo.StoragePurchase;
 import com.leyu.pojo.StorageStock;
@@ -19,9 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class StoragePurchaseService extends BaseService {
@@ -30,10 +29,11 @@ public class StoragePurchaseService extends BaseService {
 	@Autowired private StorageCommodityService storageCommodityService;
 	@Autowired private StorageSerialService storageSerialService;
 	@Autowired private StorageStockService storageStockService;
+	@Autowired private StorageStockMapper storageStockMapper;
 
     public PageInfo<?> storageSerialPages(StoragePurchase storagePurchase){
         PageHelper.startPage(storagePurchase.getStart(),storagePurchase.getLimit());
-        List<StoragePurchase> list = this.storagePurchaseMapper.queryList(storagePurchase);
+        List<StoragePurchase> list = this.storagePurchaseMapper.select(storagePurchase);
         PageInfo<StoragePurchase> pm = new PageInfo<>(list);
         return pm;
     }
@@ -54,32 +54,57 @@ public class StoragePurchaseService extends BaseService {
      * @return
      */
     private Result reservePurchaseAsPrivate(StoragePurchase storagePurchase){
-        StoragePurchase addPurchase=new StoragePurchase();
-        //Integer mold, Integer supplyCorpId, String supplyCorp, Integer purchaseCorpId, String purchaseCorp, Integer storeId, Integer status, Integer applicant, Date applyDate, String applyNote
-        storagePurchase.setMold(storagePurchase.getMold());
-        storagePurchase.setPurchaseCorpId(storagePurchase.getPurchaseCorpId());
-//        storagePurchase.setPurchaseCorp(storagePurchase.getPurchaseCorp());
-        storagePurchase.setSupplyCorpId(storagePurchase.getSupplyCorpId());
-//        storagePurchase.setSupplyCorp("");
-        storagePurchase.setApplicant(SessionUtil.getUserId());
-        storagePurchase.setApplyDate(new Date());
-        storagePurchase.setApplyNote(storagePurchase.getApplyNote());
-        storagePurchase.setStatus(Constants.PURCHASE_STATUS_1.getIntKey());
-        log.info("添加采购单");
-        this.storagePurchaseMapper.insertSelective(addPurchase);
-
+        //检查添加的串码是否有重复
+        Set<String> allserial=new HashSet<>();
+        List<String> existList=new ArrayList<>();
         for (StorageCommodity storageCommodity:storagePurchase.getStorageCommodityList()) {
             String serials=storageCommodity.getSerials();
             Integer commodityMold=storageCommodity.getCommodityMold();
             log.info("验证{}并添加采购商品[id：{} ；name：{}]，序列号：{}",commodityMold,storageCommodity.getCommodityId(),storageCommodity.getCommodity(),serials);
-            if(commodityMold==1 && StringUtils.isEmpty(serials))throw new ServiceException("序列号不存在");
+            if(commodityMold==1){
+                if(StringUtils.isEmpty(serials))return new Result(Result.ERROR,"序列号不存在");
+                String[] serialArray=StringUtils.split(serials,"\r\n");
+                List<String> serialList=Arrays.asList(serialArray);
+                storageCommodity.setSerialList(serialList);
+                for (String serial:serialList) {
+                    boolean exist=allserial.contains(serial);
+                    if(exist){
+                        existList.add(serial);
+                    }else{
+                        allserial.add(serial);
+                    }
+                }
+            }
+        }
+        if(!existList.isEmpty())return new Result(Result.ERROR,"序列号存在重复");
+        //检查添加的串码是否已存在
+        String[] allserialArray=allserial.toArray(new String[]{});
+        List<String> allserialList=Arrays.asList(allserialArray);
+        int existCount=this.storageSerialService.findStorageSerialsInStockCount(allserialList);
+        if(existCount>0)return new Result(Result.ERROR,"序列号已在库或即将入库");
 
-            String[] serialArray=StringUtils.split(serials,"\r\n");
-            List<String> serialList=Arrays.asList(serialArray);
+        //进行数据添加
+        StoragePurchase addPurchase=new StoragePurchase();
+        //Integer mold, Integer supplyCorpId, String supplyCorp, Integer purchaseCorpId, String purchaseCorp, Integer storeId, Integer status, Integer applicant, Date applyDate, String applyNote
+        addPurchase.setMold(storagePurchase.getMold());
+        addPurchase.setPurchaseCorpId(storagePurchase.getPurchaseCorpId());
+        addPurchase.setPurchaseCorp("TODO");
+        addPurchase.setSupplyCorpId(storagePurchase.getSupplyCorpId());
+        addPurchase.setSupplyCorp("TODO");
+        addPurchase.setStoreId(storagePurchase.getStoreId());
+        addPurchase.setApplicant(SessionUtil.getUserId());
+        addPurchase.setApplyDate(new Date());
+        addPurchase.setApplyNote(storagePurchase.getApplyNote());
+        addPurchase.setStatus(Constants.PURCHASE_STATUS_1.getIntKey());
+        addPurchase.setIsDel(false);
+        log.info("添加采购单");
+        this.storagePurchaseMapper.insertSelective(addPurchase);
 
-            StorageCommodity addstorageCommodity=this.storageCommodityService.addStorageCommodity(Constants.COMMODITY_SOURCE_PURCHASE.getStringKey(),addPurchase.getId(),storageCommodity.getStorageStockId(),storageCommodity.getQuantity());
-
+        for (StorageCommodity storageCommodity:storagePurchase.getStorageCommodityList()) {
+            List<String> serialList=storageCommodity.getSerialList();
+            Integer commodityMold=storageCommodity.getCommodityMold();
             Integer serialMold=storageCommodity.getSerialMold();
+            StorageCommodity addstorageCommodity=this.storageCommodityService.addStorageCommodity(Constants.COMMODITY_SOURCE_PURCHASE.getStringKey(),addPurchase.getId(),storageCommodity.getStorageStockId(),storageCommodity.getQuantity());
             if(commodityMold==1){
                 log.info("添加单据的序列码");
                 this.storageSerialService.addStorageSerial2WaitIn(addstorageCommodity.getId(),serialMold,serialList);
@@ -98,7 +123,9 @@ public class StoragePurchaseService extends BaseService {
         Integer[] confirms=new Integer[]{1,2};
         if(!ArrayUtils.contains(confirms,confirm))return new Result(Result.ERROR,"未知审核结果");
         StoragePurchase storagePurchase=this.storagePurchaseMapper.selectByPrimaryKey(storagePurchaseId);
-        storagePurchase.setAuditor(SessionUtil.getUserId());
+        if(storagePurchase.getStatus()!=Constants.PURCHASE_STATUS_1.getIntKey())return new Result(Result.ERROR,"当前采购单状态异常");
+
+//        storagePurchase.setAuditor(SessionUtil.getUserId());
         storagePurchase.setAuditDate(new Date());
         storagePurchase.setAuditNote(remark);
         if(confirm==1){//审核通过
@@ -118,6 +145,7 @@ public class StoragePurchaseService extends BaseService {
                 this.storageStockService.totalStock(storageStock,storageCommodity.getQuantity());
                 log.info("更新采购单据{}的序列的状态至在库",storagePurchaseId);
                 this.storageSerialService.updateStorageSerial2In(storageCommodity.getId());
+                this.storageStockMapper.updateByPrimaryKey(storageStock);
             }else if(confirm==2){//审核未通过
                 log.info("更新采购单据{}的序列状态至删除",storagePurchaseId);
                 this.storageSerialService.updateStorageSerial2Del(storageCommodity.getId());

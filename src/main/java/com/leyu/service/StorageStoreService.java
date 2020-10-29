@@ -27,10 +27,15 @@ public class StorageStoreService extends BaseService {
 
 	public PageInfo<?> storePages(StorageStore storageStore){
         PageHelper.startPage(storageStore.getStart(),storageStore.getLimit());
-        List<StorageStore> list = this.storageStoreMapper.queryList(storageStore);
+//        List<StorageStore> list = this.storageStoreMapper.queryList(storageStore);
+        List<StorageStore> list = this.storageStoreMapper.select(storageStore);
         PageInfo<StorageStore> pm = new PageInfo<StorageStore>(list);
 		return pm;
 	}
+
+    public StorageStore getStore(Integer storeId){
+        return this.storageStoreMapper.selectByPrimaryKey(storeId);
+    }
 
     public Result addStore(String name){
         StorageStore bean=new StorageStore();
@@ -43,7 +48,7 @@ public class StorageStoreService extends BaseService {
 
 	public Result addStore(StorageStore storageStore){
         StorageStore bean=null;
-		boolean isAdd=storageStore.getId()==null;
+		boolean isAdd=storageStore.getId()==null || storageStore.getId()==0;
         if(isAdd){
             bean=new StorageStore();
         }else{
@@ -76,6 +81,7 @@ public class StorageStoreService extends BaseService {
 	}
 
 	public Result delStore(Integer storageStoreId){
+	    //TODO 检查仓库的库存，若有库存则不允许删除
         StorageStore bean=this.storageStoreMapper.selectByPrimaryKey(storageStoreId);
         bean.setDel(true);
         this.storageStoreMapper.updateByPrimaryKey(bean);

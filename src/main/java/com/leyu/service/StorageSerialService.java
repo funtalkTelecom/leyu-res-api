@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -148,6 +149,7 @@ public class StorageSerialService extends BaseService {
         if(inStockCount>0)return new Result(Result.OK,"序列号已存在，无法继续添加");
 
         StorageCommodity storageCommodity=storageCommodityMapper.selectByPrimaryKey(inStorageCommodityId);
+        if(storageCommodity.getQuantity()!=serials.size())throw new ServiceException("更新的数量与预期的不一致");
         for (String serial:serials) {
             StorageSerial storageSerial=new StorageSerial(storageCommodity.getStorageStockId(),mold,serial,1,
                     Constants.APPOINT_VALID.getIntKey(),Constants.SERIAL_STATUS_1.getIntKey(),inStorageCommodityId);
@@ -163,7 +165,10 @@ public class StorageSerialService extends BaseService {
     public Integer findStorageSerialsInStockCount(List<String> serials){
         Example example=new Example(StorageSerial.class);
         Example.Criteria criteria=example.createCriteria();
-        criteria.andEqualTo("status",Constants.SERIAL_STATUS_2.getIntKey());
+        List<Object> statusList=new ArrayList<>();
+        statusList.add(Constants.SERIAL_STATUS_1.getIntKey());
+        statusList.add(Constants.SERIAL_STATUS_2.getIntKey());
+        criteria.andIn("status",statusList);
         List<Object> serialsObject=Utils.string2Object(serials);
         criteria.andIn("serial",serialsObject);
         int inStockCount=this.storageSerialMapper.selectCountByExample(example);

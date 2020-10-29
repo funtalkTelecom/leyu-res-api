@@ -69,7 +69,7 @@ public class StorageStockService extends BaseService {
      * @return
      */
     public Result freezeStock(StorageStock bean,int quantity){
-        bean.setFreezeQuantity(bean.getUsableQuantity()+quantity);
+        bean.setFreezeQuantity(bean.getFreezeQuantity()+quantity);
         //TODO 添加库存处理日志
         return new Result(Result.OK,"库存处理成功");
     }
@@ -80,7 +80,7 @@ public class StorageStockService extends BaseService {
      * @return
      */
     public Result totalStock(StorageStock bean,int quantity){
-        bean.setTotalQuantity(bean.getUsableQuantity()+quantity);
+        bean.setTotalQuantity(bean.getTotalQuantity()+quantity);
         //TODO 添加库存处理日志
         return new Result(Result.OK,"库存处理成功");
     }
