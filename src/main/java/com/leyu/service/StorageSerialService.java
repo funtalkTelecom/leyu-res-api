@@ -185,4 +185,26 @@ public class StorageSerialService extends BaseService {
         return this.storageSerialMapper.select(storageStock);
     }
 
+    /**
+     * 使用入库单商品查询序列号
+     * @param inStorageCommodityId
+     * @return
+     */
+    public List<StorageSerial> findByInStorageCommodityId(Integer inStorageCommodityId){
+        StorageSerial storageStock=new StorageSerial();
+        storageStock.setInStorageCommodityId(inStorageCommodityId);
+        return this.storageSerialMapper.select(storageStock);
+    }
+
+    /**
+     * 使用出库单商品查询序列号
+     * @param outStorageCommodityId
+     * @return
+     */
+    public List<StorageSerial> findByOutStorageCommodityId(Integer outStorageCommodityId){
+        StorageSerial storageStock=new StorageSerial();
+        storageStock.setInStorageCommodityId(outStorageCommodityId);
+        return this.storageSerialMapper.select(storageStock);
+    }
+
 }

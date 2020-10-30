@@ -8,6 +8,7 @@ import com.leyu.mapper.StoragePurchaseMapper;
 import com.leyu.mapper.StorageStockMapper;
 import com.leyu.pojo.StorageCommodity;
 import com.leyu.pojo.StoragePurchase;
+import com.leyu.pojo.StorageSerial;
 import com.leyu.pojo.StorageStock;
 import com.leyu.utils.Constants;
 import com.leyu.utils.SessionUtil;
@@ -38,6 +39,25 @@ public class StoragePurchaseService extends BaseService {
         return pm;
     }
 
+    /**
+     * 查询采购单的信息
+     * @param storagePurchaseId
+     * @return
+     */
+    public StoragePurchase get(Integer storagePurchaseId){
+        StoragePurchase storagePurchase = this.storagePurchaseMapper.selectByPrimaryKey(storagePurchaseId);
+        List<StorageCommodity> storageCommodities=this.storageCommodityService.findStorageCommodity(Constants.COMMODITY_SOURCE_PURCHASE.getStringKey(),storagePurchaseId);
+        for (StorageCommodity storageCommodity:storageCommodities) {
+            List<StorageSerial> storageSerials = this.storageSerialService.findByInStorageCommodityId(storageCommodity.getId());
+            List<String> serials=new ArrayList<>();
+            for (StorageSerial storageSerial:storageSerials) {
+                serials.add(storageSerial.getSerial());
+            }
+            storageCommodity.setSerialList(serials);
+        }
+        storagePurchase.setStorageCommodityList(storageCommodities);
+        return storagePurchase;
+    }
     /**
      * 预入库
      * @return

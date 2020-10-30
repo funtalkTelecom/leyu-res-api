@@ -391,3 +391,7 @@ ADD COLUMN `complete_date` datetime NULL COMMENT '发货或者确认撤销' AFTE
 
 ALTER TABLE `tb_storage_serial`
 MODIFY COLUMN `id` int(11) NOT NULL AUTO_INCREMENT FIRST;
+
+
+ALTER TABLE `tb_storage_purchase`
+ADD COLUMN `store` varchar(32) NULL COMMENT '仓库' AFTER `store_id`;

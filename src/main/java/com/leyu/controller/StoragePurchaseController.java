@@ -10,9 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/purchase")
@@ -21,15 +19,21 @@ public class StoragePurchaseController {
 	@Autowired private StoragePurchaseService storagePurchaseService;
 
 	@RequestMapping("/list")
-	public Result listStore(@RequestBody StoragePurchase storagePurchase) {
+	public Result listStoragePurchase(@RequestBody StoragePurchase storagePurchase) {
 		PageInfo<?> pageInfo= storagePurchaseService.storageSerialPages(storagePurchase);
 		return new Result(Result.OK,pageInfo);
 	}
 
 	@RequestMapping("/add")
-	public Result addStore(@RequestBody StoragePurchase storagePurchase) {
+	public Result addStoragePurchase(@RequestBody StoragePurchase storagePurchase) {
 		storagePurchase.setPurchaseCorpId(SessionUtil.getUserId());//TODO 公司ID
 		Result result=storagePurchaseService.reservePurchase(storagePurchase);
 		return result;
+	}
+
+	@GetMapping("/{storagePurchaseId}")
+	public Result getStoragePurchase(@PathVariable("storagePurchaseId") Integer storagePurchaseId) {
+		StoragePurchase storagePurchase=storagePurchaseService.get(storagePurchaseId);
+		return new Result(Result.OK,storagePurchase);
 	}
 }

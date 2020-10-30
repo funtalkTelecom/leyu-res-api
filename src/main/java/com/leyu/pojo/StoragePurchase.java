@@ -23,15 +23,23 @@ public class StoragePurchase  extends BasePojo implements java.io.Serializable{
 
     private Integer storeId;
 
+    private String store;
+
     private Integer status;
 
     private Integer applicant;
+
+    @Transient
+    private String applicantStr;
 
     private Date applyDate;
 
     private String applyNote;
 
     private Integer auditor;
+
+    @Transient
+    private String auditorStr;
 
     private Date auditDate;
 
@@ -204,5 +212,29 @@ public class StoragePurchase  extends BasePojo implements java.io.Serializable{
 
     public void setStorageCommodityList(List<StorageCommodity> storageCommodityList) {
         this.storageCommodityList = storageCommodityList;
+    }
+
+    public String getStore() {
+        return store;
+    }
+
+    public void setStore(String store) {
+        this.store = store;
+    }
+
+    public String getApplicantStr() {
+        return applicantStr;
+    }
+
+    public void setApplicantStr(String applicantStr) {
+        this.applicantStr = applicantStr;
+    }
+
+    public String getAuditorStr() {
+        return auditorStr;
+    }
+
+    public void setAuditorStr(String auditorStr) {
+        this.auditorStr = auditorStr;
     }
 }
