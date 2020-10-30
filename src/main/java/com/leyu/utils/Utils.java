@@ -474,7 +474,6 @@ public class Utils {
 	 * 数字格式化 	小数点后保留2位(四舍五入)
 	 *
 	 * @param v        待格式化数字
-	 * @param currency 1=货币格式
 	 * @return
 	 */
 	public static Double convertFormat(Double v) {
@@ -515,91 +514,17 @@ public class Utils {
 		return count;
 	}
 
-	public static boolean kindeditorWriter(final String content, final String fileName, final String filePath) {
-		boolean b = false;
-
-		try {
-			File file = new File(filePath);
-			if(!file.isDirectory()){
-				file.mkdir();
-			}
-			file = new File(filePath + fileName);
-			FileWriter fileWriter = new FileWriter(file);
-			fileWriter.write(content);
-			fileWriter.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-			b = false;
+	/**
+	 * list String 转 object
+	 * @param serials
+	 * @return
+	 */
+	public static List<Object> string2Object(List<String> serials){
+		List<Object> serialsObject=new ArrayList<>();
+		for (String serial:serials) {
+			serialsObject.add(serial);
 		}
-		b=true;
-
-		return b;
-	}
-
-	public static String kindeditorReader(final String fileName, final String filePath) throws IOException {
-		String content;
-		StringBuffer result = new StringBuffer();
-
-		FileReader fr = new FileReader(filePath + fileName);
-		BufferedReader br = new BufferedReader(fr);
-		while ((content = br.readLine())!=null){
-			result.append(content);
-		}
-
-		return result.toString();
-	}
-
-	/**
-	 * double 相加
-	 * @param d1
-	 * @param d2
-	 * @return
-	 */
-	public final static double sum(double d1,double d2){
-		BigDecimal bd1 = new BigDecimal(Double.toString(d1));
-		BigDecimal bd2 = new BigDecimal(Double.toString(d2));
-		return bd1.add(bd2).doubleValue();
-	}
-
-
-	/**
-	 * double 相减
-	 * @param d1
-	 * @param d2
-	 * @return
-	 */
-	public final static double sub(double d1, double d2) {
-		BigDecimal bd1 = new BigDecimal(Double.toString(d1));
-		BigDecimal bd2 = new BigDecimal(Double.toString(d2));
-		return bd1.subtract(bd2).doubleValue();
-	}
-
-	/**
-	 * double 乘法
-	 * @param d1
-	 * @param d2
-	 * @return
-	 */
-	public final static double mul(double d1,double d2){
-		BigDecimal bd1 = new BigDecimal(Double.toString(d1));
-		BigDecimal bd2 = new BigDecimal(Double.toString(d2));
-		return bd1.multiply(bd2).doubleValue();
-	}
-
-
-	/**
-	 * double 除法
-	 * @param d1
-	 * @param d2
-	 * @param demical 四舍五入 小数点位数
-	 * @return
-	 */
-	public final static double div(double d1,double d2, int demical){
-		//  当然在此之前，你要判断分母是否为0，
-		//  为0你可以根据实际需求做相应的处理
-		BigDecimal bd1 = new BigDecimal(Double.toString(d1));
-		BigDecimal bd2 = new BigDecimal(Double.toString(d2));
-		return bd1.divide(bd2,demical,BigDecimal.ROUND_HALF_UP).doubleValue();
+		return serialsObject;
 	}
 
     public static Element prase_xml(String message) throws DocumentException {
