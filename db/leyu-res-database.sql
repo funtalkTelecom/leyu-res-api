@@ -5,8 +5,6 @@ MySQL - 5.6.44 : Database - leyudb
 */
 
 
-/*Table structure for table `sequence` */
-
 DROP TABLE IF EXISTS `sequence`;
 
 CREATE TABLE `sequence` (
@@ -18,7 +16,52 @@ CREATE TABLE `sequence` (
 
 /*Data for the table `sequence` */
 
-insert  into `sequence`(`name`,`current_value`,`increment`) values ('leyu_seq_5',10031,1),('leyu_seq_8',10001017,1),('rbac_serial',100344,1);
+insert  into `sequence`(`name`,`current_value`,`increment`) values ('leyu_seq_5',10039,1),('leyu_seq_8',10001017,1),('rbac_serial',100378,1);
+
+/*Table structure for table `tb_city` */
+
+DROP TABLE IF EXISTS `tb_city`;
+
+CREATE TABLE `tb_city` (
+  `id` int(11) NOT NULL DEFAULT '0',
+  `name` varchar(255) DEFAULT '',
+  `full_name` varchar(255) DEFAULT '',
+  `acronym` varchar(255) DEFAULT '',
+  `pid` int(11) DEFAULT '0',
+  `grade` int(10) DEFAULT '0',
+  `is_del` int(1) DEFAULT '0',
+  `zip_code` varchar(255) DEFAULT '',
+  `area_code` varchar(255) DEFAULT '',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPACT;
+
+/*Data for the table `tb_city` */
+
+/*Table structure for table `tb_corporation` */
+
+DROP TABLE IF EXISTS `tb_corporation`;
+
+CREATE TABLE `tb_corporation` (
+  `id` int(11) NOT NULL DEFAULT '0',
+  `name` varchar(32) NOT NULL DEFAULT '',
+  `short_name` varchar(16) DEFAULT '',
+  `business_license` varchar(32) DEFAULT '',
+  `business_license_img` varchar(32) DEFAULT '',
+  `contacts` varchar(32) DEFAULT '',
+  `phone` varchar(32) DEFAULT '',
+  `email` varchar(32) DEFAULT '',
+  `province` int(11) DEFAULT '0',
+  `city` int(10) DEFAULT '0',
+  `district` int(10) DEFAULT '0',
+  `address` varchar(32) DEFAULT '',
+  `status` int(1) DEFAULT '0',
+  `is_del` int(1) DEFAULT '0',
+  `remark` varchar(64) DEFAULT '',
+  `add_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPACT;
+
+/*Data for the table `tb_corporation` */
 
 /*Table structure for table `tb_permission` */
 
@@ -39,7 +82,7 @@ CREATE TABLE `tb_permission` (
 
 /*Data for the table `tb_permission` */
 
-insert  into `tb_permission`(`id`,`type`,`pid`,`name`,`code`,`icon`,`url`,`seq`) values (0,1,NULL,'菜单管理',NULL,'','',1),(10,1,0,'首页',NULL,'','',1),(50,1,0,'设置',NULL,'','',5),(100100,2,10,'后台首页',NULL,'el-icon-menu','index',1),(100201,3,100100,'添加','index_add','','',1),(100202,3,100100,'修改','index_edit','','',2),(500500,2,50,'用户管理',NULL,'el-icon-setting','set_user',1),(500600,2,50,'角色管理',NULL,'el-icon-setting','set_role',2),(500700,2,50,'权限管理',NULL,'el-icon-setting','set_right',3);
+insert  into `tb_permission`(`id`,`type`,`pid`,`name`,`code`,`icon`,`url`,`seq`) values (0,1,NULL,'菜单管理',NULL,'','',1),(10,1,0,'首页',NULL,'','',1),(20,1,0,'代理商',NULL,'','',1),(50,1,0,'设置',NULL,'','',5),(1001,2,10,'后台首页',NULL,'el-icon-menu','index',1),(2001,2,20,'商家管理',NULL,'el-icon-setting','set_corp',1),(5001,2,50,'用户管理',NULL,'el-icon-setting','set_user',1),(5002,2,50,'角色管理',NULL,'el-icon-setting','set_role',2),(5003,2,50,'权限管理',NULL,'el-icon-setting','set_right',3),(100101,3,1001,'添加','index_add','','',1),(100102,3,1001,'修改','index_edit','','',2);
 
 /*Table structure for table `tb_role` */
 
@@ -70,7 +113,7 @@ CREATE TABLE `tb_role_permission` (
 
 /*Data for the table `tb_role_permission` */
 
-insert  into `tb_role_permission`(`id`,`role_id`,`permission_id`) values (100169,10003,50),(100174,10003,500500),(100175,10003,500600),(100176,10003,500700),(100177,10003,0),(100254,10002,10),(100255,10002,100100),(100257,10002,100201),(100258,10002,100202),(100272,10002,500500),(100273,10002,500600),(100274,10002,500700),(100275,10002,0),(100276,10002,50),(100281,10013,50),(100286,10013,500500),(100287,10013,500600),(100288,10013,500700),(100289,10013,0),(100317,10001017,100100),(100318,10001017,100202),(100321,10001017,0),(100322,10001017,10),(100336,10004,50),(100341,10004,500500),(100342,10004,500600),(100343,10004,500700),(100344,10004,0);
+insert  into `tb_role_permission`(`id`,`role_id`,`permission_id`) values (10032,10002,20),(10033,10002,1001),(10034,10002,2001),(10035,10002,5001),(10036,10002,5002),(10037,10002,5003),(10038,10002,100101),(10039,10002,100102),(100357,10002,0),(100358,10002,10),(100375,10002,50);
 
 /*Table structure for table `tb_user` */
 
@@ -110,8 +153,8 @@ DROP TABLE IF EXISTS `tb_user_permission`;
 
 CREATE TABLE `tb_user_permission` (
   `id` int(11) NOT NULL,
-  `user_id` int(11) DEFAULT NULL COMMENT '用户id',
-  `permission` int(11) DEFAULT NULL COMMENT '权限id',
+  `user_id` int(11) DEFAULT NULL COMMENT '鐢ㄦ埛id',
+  `permission` int(11) DEFAULT NULL COMMENT '鏉冮檺id',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
@@ -132,55 +175,17 @@ CREATE TABLE `tb_user_role` (
   UNIQUE KEY `uni1` (`user_id`,`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
-
-DROP TABLE IF EXISTS `tb_city`;
-CREATE TABLE `tb_city`  (
-  `id` int(11) NOT NULL DEFAULT 0,
-  `name` varchar(255)  NULL DEFAULT '',
-  `full_name` varchar(255)  NULL DEFAULT '',
-  `acronym` varchar(255) NULL DEFAULT '',
-  `pid` int(11) NULL DEFAULT 0,
-  `grade` int(10) NULL DEFAULT 0,
-  `is_del` int(1) NULL DEFAULT 0,
-  `zip_code` varchar(255)  NULL DEFAULT '',
-  `area_code` varchar(255)  NULL DEFAULT ''
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB ROW_FORMAT = Compact;
-
-DROP TABLE IF EXISTS `tb_corporation`;
-CREATE TABLE `tb_corporation`  (
-  `id` int(11) NOT NULL DEFAULT 0,
-  `name` varchar(32) NOT NULL DEFAULT '',
-  `short_name` varchar(16)  NULL DEFAULT '',
-  `business_license` varchar(32) NULL DEFAULT '',
-  `business_license_img` varchar(32) NULL DEFAULT '',
-  `contacts` varchar(32) NULL DEFAULT '',
-  `phone` varchar(32) NULL DEFAULT '',
-  `email` varchar(32) NULL DEFAULT '',
-  `province` int(11) NULL DEFAULT 0,
-  `city` int(10) NULL DEFAULT 0,
-  `district` int(10) NULL DEFAULT 0,
-  `address` varchar(32) NULL DEFAULT '',
-  `status` int(1) NULL DEFAULT 0,
-  `is_del` int(1) NULL DEFAULT 0,
-  `address` varchar(32) NULL DEFAULT '',
-  `remark` varchar(64)  NULL DEFAULT '',
-  `add_date` datetime  NULL DEFAULT ''
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB ROW_FORMAT = Compact;
-
-
-
 /*Data for the table `tb_user_role` */
 
 insert  into `tb_user_role`(`id`,`user_id`,`role_id`,`remark`) values (100181,10001013,10003,NULL),(100293,10010003,10003,NULL),(100294,10010003,10013,NULL),(100295,10010003,10005,NULL),(10001000,10010002,10002,NULL);
 
+
 /* Function  structure for function  `currval` */
 
-/*!50003 DROP FUNCTION IF EXISTS `currval` */;
+ DROP FUNCTION IF EXISTS `currval`;
 DELIMITER $$
 
-/*!50003 CREATE DEFINER=`root`@`localhost` FUNCTION `currval`(seq_name VARCHAR(50)) RETURNS int(11)
+ CREATE DEFINER=`root`@`localhost` FUNCTION `currval`(seq_name VARCHAR(50)) RETURNS int(11)
 BEGIN 
      DECLARE VALUE INTEGER; 
      SET VALUE = 0; 
@@ -188,20 +193,20 @@ BEGIN
           FROM sequence 
           WHERE NAME = seq_name; 
      RETURN VALUE; 
-END */$$
+END $$
 DELIMITER ;
 
 /* Function  structure for function  `nextval` */
 
-/*!50003 DROP FUNCTION IF EXISTS `nextval` */;
+ DROP FUNCTION IF EXISTS `nextval`;
 DELIMITER $$
 
-/*!50003 CREATE DEFINER=`root`@`localhost` FUNCTION `nextval`(seq_name VARCHAR(50)) RETURNS int(11)
+ CREATE DEFINER=`root`@`localhost` FUNCTION `nextval`(seq_name VARCHAR(50)) RETURNS int(11)
     DETERMINISTIC
 BEGIN 
      UPDATE sequence 
           SET current_value = current_value + increment 
           WHERE NAME = seq_name; 
      RETURN currval(seq_name); 
-END */$$
+END $$
 DELIMITER ;

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <context id="Mysql" targetRuntime="MyBatis3" defaultModelType="flat">
+
+        <property name="autoDelimitKeywords" value="true"/>
+        <property name="beginningDelimiter" value="`"/>
+        <property name="endingDelimiter" value="`"/>
+
+        <!--覆盖生成XML文件-->
+        <plugin type="org.mybatis.generator.plugins.UnmergeableXmlMappersPlugin" />
+        <!-- 生成的实体类添加toString()方法 -->
+        <plugin type="org.mybatis.generator.plugins.ToStringPlugin" />
+
+        <!-- 不生成注释 -->
+        <commentGenerator>
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
+
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://172.31.9.7:3306/leyudb"
+                        userId="root"
+                        password="mysql123456">
+        </jdbcConnection>
+
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="false" />
+        </javaTypeResolver>
+        <!-- domain类的位置 -->
+        <javaModelGenerator targetProject="src\main\java"
+                            targetPackage="com.leyu.temp.domain">
+        <property name="enableSubPackages" value="true" />
+        </javaModelGenerator>
+        <!-- mapper xml的位置 -->
+        <sqlMapGenerator targetProject="src\main\java"
+                         targetPackage="com.leyu.temp.mapper">
+        <property name="enableSubPackages" value="true" />
+        </sqlMapGenerator>
+        <!-- mapper类的位置 -->
+        <javaClientGenerator targetProject="src\main\java"
+                             targetPackage="com.leyu.temp.mapper"
+                             type="XMLMAPPER">
+            <property name="enableSubPackages" value="true" />
+        </javaClientGenerator>
+
+
+        <!--<table tableName="tb_corporation" domainObjectName="Corporation" enableCountByExample="false"-->
+               <!--enableUpdateByExample="false" enableDeleteByExample="true" enableSelectByExample="false"-->
+               <!--selectByExampleQueryId="false"/>-->
+
+        <table tableName="tb_city" domainObjectName="City" enableSelectByPrimaryKey="true"
+               enableCountByExample="false"  enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false"
+               selectByExampleQueryId="false" enableDeleteByPrimaryKey="false"
+               enableInsert="false"    enableUpdateByPrimaryKey="false" ></table>
+
+        <table tableName="tb_corporation" domainObjectName="Corporation" enableSelectByPrimaryKey="true"
+               enableCountByExample="false"  enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false"
+               selectByExampleQueryId="false" enableDeleteByPrimaryKey="false"
+               enableInsert="false"    enableUpdateByPrimaryKey="false" ></table>
+    </context>
+</generatorConfiguration>
