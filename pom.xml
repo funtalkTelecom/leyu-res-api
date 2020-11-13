@@ -199,9 +199,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.houbb</groupId>
-            <artifactId>valid-jsr</artifactId>
-            <version>0.1.2</version>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>5.4.1.Final</version>
         </dependency>
 
     </dependencies>

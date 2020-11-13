@@ -21,13 +21,8 @@ public class ExceptionHandleAdvice {
 		long err_no=System.currentTimeMillis();
 		String errorInfo = String.format(e.getMessage()+"[错误编号：%s]",err_no);
 		log.error(errorInfo,e);
-		if(Utils.isAjax(request)){
-			Utils.returnResult(new Result(Result.ERROR, errorInfo));
-			return null;
-		}
-		ModelAndView v=new ModelAndView("admin/error-page");
-		v.addObject("errormsg",errorInfo);
-		return v;
+		Utils.returnResult(new Result(Result.ERROR, errorInfo));
+		return null;
 	}
 
 	@ExceptionHandler(WarmException.class)
@@ -51,13 +46,8 @@ public class ExceptionHandleAdvice {
 		long err_no=System.currentTimeMillis();
 		String errorInfo = String.format("系统出现错误[错误编号%s]",err_no);
 		log.error(errorInfo,e);
-		if(Utils.isAjax(request)){
-			Utils.returnResult(new Result(Result.ERROR, errorInfo));
-			return null;
-		}
-		ModelAndView v=new ModelAndView("admin/error-page");
-		v.addObject("errormsg",errorInfo);
-		return v;
+		Utils.returnResult(new Result(Result.ERROR, errorInfo));
+		return null;
 	}
 	
 

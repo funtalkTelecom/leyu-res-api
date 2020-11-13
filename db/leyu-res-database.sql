@@ -400,3 +400,32 @@ MODIFY COLUMN `id` int(11) NOT NULL AUTO_INCREMENT FIRST;
 
 ALTER TABLE `tb_storage_purchase`
 ADD COLUMN `store` varchar(32) NULL COMMENT '仓库' AFTER `store_id`;
+
+
+CREATE TABLE `tb_dict`  (
+  `id` int(11) NOT NULL,
+  `group_key` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `text` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `pid` int(11) NULL DEFAULT NULL,
+  `is_del` tinyint(1) NULL DEFAULT NULL,
+  `note` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Compact;
+
+
+CREATE TABLE `tb_commodity`  (
+  `id` int NOT NULL,
+  `corp_id` int NOT NULL COMMENT '归属运营商',
+  `classify` tinyint(1) NOT NULL COMMENT '分类(1sim卡2常规商品)',
+  `name` varchar(32) NOT NULL COMMENT '品名',
+  `section_no` int NOT NULL COMMENT '号段(-1代表不限)',
+  `section_city` int NOT NULL COMMENT '地市(-1代表不限)',
+  `serial` tinyint(1) NOT NULL COMMENT '序列管理(1是0否)',
+  `remark` varchar(64) NULL COMMENT '备注',
+  `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态(1有效2无效)',
+  `is_del` tinyint(1) NOT NULL DEFAULT 0 COMMENT '删除(0未删1删除)',
+  `add_user` int(10) NULL COMMENT '添加人',
+  `add_date` datetime NULL COMMENT '添加时间',
+  PRIMARY KEY (`id`)
+);
+

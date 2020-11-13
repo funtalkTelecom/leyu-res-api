@@ -55,7 +55,14 @@ public final class SessionUtil {
 		User user = getUser();
 		return user == null ? -1 : user.getId();
 	}
-	
+	/**
+	 * 获取放在session中的corpId
+	 * @return
+	 */
+	public final static Integer getCorpId(){
+		User user = getUser();
+		return user == null ? -1 : user.getId();
+	}
 
 	/**
 	 * 获取sesssion中的角色

@@ -1,6 +1,10 @@
 package com.leyu.pojo;
 
+import com.leyu.config.validator.ValidateGroup;
+
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -11,8 +15,10 @@ public class StoragePurchase  extends BasePojo implements java.io.Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Min(value=1,message = "请选择采购模型",groups ={ValidateGroup.FirstGroup.class})
     private Integer mold;
 
+    @Min(value=1,message = "请选择供应商",groups ={ValidateGroup.FirstGroup.class})
     private Integer supplyCorpId;
 
     private String supplyCorp;
@@ -20,7 +26,7 @@ public class StoragePurchase  extends BasePojo implements java.io.Serializable{
     private Integer purchaseCorpId;
 
     private String purchaseCorp;
-
+    @Min(value=1,message = "请选择仓库",groups ={ValidateGroup.FirstGroup.class})
     private Integer storeId;
 
     private String store;
@@ -33,7 +39,7 @@ public class StoragePurchase  extends BasePojo implements java.io.Serializable{
     private String applicantStr;
 
     private Date applyDate;
-
+    @Size(max=64,message = "申请备注不能超过64个字",groups ={ValidateGroup.FirstGroup.class})
     private String applyNote;
 
     private Integer auditor;
@@ -42,7 +48,7 @@ public class StoragePurchase  extends BasePojo implements java.io.Serializable{
     private String auditorStr;
 
     private Date auditDate;
-
+    @Size(max=64,message = "审核意见不能超过64个字",groups ={ValidateGroup.SecondeGroup.class})
     private String auditNote;
 
     private Boolean isDel;
