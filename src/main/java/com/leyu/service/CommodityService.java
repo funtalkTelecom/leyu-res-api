@@ -46,11 +46,10 @@ public class CommodityService {
         PageHelper.startPage(commodity.getStart(),commodity.getLimit());
         List<Commodity> list = this.commodityMapper.selectByExample(example);
         for(Commodity commodity1:list){
-            if(commodity1.getSectionCity()==-1)continue;
-            City city=cityMapper.selectByPrimaryKey(commodity1.getSectionCity());
-            if(city!=null)commodity1.setSectionCityStr(city.getFullName());
             Corporation corporation=corporationMapper.selectByPrimaryKey(commodity1.getCorpId());
             if(corporation!=null)commodity1.setCorpIdStr(corporation.getShortName());
+            City city=cityMapper.selectByPrimaryKey(commodity1.getSectionCity());
+            if(city!=null)commodity1.setSectionCityStr(city.getFullName());
         }
         PageInfo<Commodity> pm = new PageInfo<>(list);
         return pm;

@@ -1,12 +1,16 @@
 package com.leyu.service;
 
+import com.github.abel533.entity.Example;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.leyu.dto.Result;
 import com.leyu.mapper.StorageStoreMapper;
+import com.leyu.pojo.Commodity;
 import com.leyu.pojo.StorageStore;
+import com.leyu.utils.ApiSessionUtil;
 import com.leyu.utils.Constants;
 import com.leyu.utils.SessionUtil;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,17 +23,29 @@ import java.util.List;
 public class StorageStoreService extends BaseService {
 	private static Logger log = LogManager.getLogger(StorageStoreService.class);
 	@Autowired private StorageStoreMapper storageStoreMapper;
+    @Autowired private ApiSessionUtil apiSessionUtil;
 
 
 	public List<StorageStore> myStores(){
-		return this.findStoresByCorpId(SessionUtil.getUserId());//TODO 公司id
+	    return this.findStoresByCorpId(apiSessionUtil.getUser().getCorpId());
 	}
 
 	public PageInfo<?> storePages(StorageStore storageStore){
+        Example example=new Example(StorageStore.class);
+        Example.Criteria criteria=example.createCriteria();
+        criteria.andEqualTo("isDel",false);
+        if(StringUtils.isNotEmpty(storageStore.getName())){
+            String name="%"+storageStore.getName()+"%";
+            criteria.andLike("name",name);
+        }
+        if(storageStore.getCorpId()!=null){
+            criteria.andEqualTo("corpId",storageStore.getCorpId());
+        }
+        example.setOrderByClause(" id desc");
         PageHelper.startPage(storageStore.getStart(),storageStore.getLimit());
 //        List<StorageStore> list = this.storageStoreMapper.queryList(storageStore);
-        List<StorageStore> list = this.storageStoreMapper.select(storageStore);
-        PageInfo<StorageStore> pm = new PageInfo<StorageStore>(list);
+        List<StorageStore> list = this.storageStoreMapper.selectByExample(example);
+        PageInfo<StorageStore> pm = new PageInfo<>(list);
 		return pm;
 	}
 

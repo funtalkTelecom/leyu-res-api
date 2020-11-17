@@ -9,6 +9,7 @@ import com.leyu.dto.Result;
 import com.leyu.pojo.StoragePurchase;
 import com.leyu.pojo.StorageStore;
 import com.leyu.service.StoragePurchaseService;
+import com.leyu.utils.ApiSessionUtil;
 import com.leyu.utils.SessionUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -28,6 +29,7 @@ public class StoragePurchaseController {
 	public final Logger logger = LoggerFactory.getLogger(this.getClass());
 	@Autowired private StoragePurchaseService storagePurchaseService;
 	@Autowired private ValidatorUtils validatorUtils;
+	@Autowired private ApiSessionUtil apiSessionUtil;
 
 	@RequestMapping("/list")
 	public Result listStoragePurchase(@RequestBody StoragePurchase storagePurchase) {
@@ -41,7 +43,7 @@ public class StoragePurchaseController {
 		List<Parameter> validateResult = ValidateUtil.validateAnd2Reslut(storagePurchase, ValidateGroup.FirstGroup.class);
 		if(!validateResult.isEmpty())return new Result(Result.PARAM,validateResult);
 
-		storagePurchase.setPurchaseCorpId(SessionUtil.getUserId());//TODO 公司ID
+		storagePurchase.setPurchaseCorpId(apiSessionUtil.getUser().getCorpId());
 		Result result=storagePurchaseService.reservePurchase(storagePurchase);
 		return result;
 	}
@@ -50,5 +52,11 @@ public class StoragePurchaseController {
 	public Result getStoragePurchase(@PathVariable("storagePurchaseId") Integer storagePurchaseId) {
 		StoragePurchase storagePurchase=storagePurchaseService.get(storagePurchaseId);
 		return new Result(Result.OK,storagePurchase);
+	}
+
+	@PostMapping("/audit")
+	public Result auditStoragePurchase(@RequestBody StoragePurchase storagePurchase) {
+		Result result=storagePurchaseService.confirmPurchase(storagePurchase.getId(),storagePurchase.getAuditor(),storagePurchase.getAuditNote());
+		return result;
 	}
 }

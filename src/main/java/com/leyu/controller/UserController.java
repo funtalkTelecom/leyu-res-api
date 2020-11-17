@@ -95,7 +95,15 @@ public class UserController {
 
 	}
 
-
+	/**
+	 * 临时 查询 类型是“卡商”的公司
+	 * @return
+	 */
+	@RequestMapping("/corp/card")
+	public Result corpCard(){
+		Object object=userService.queryCorpList();
+		return new Result(Result.OK,object);
+	}
 
 
 }

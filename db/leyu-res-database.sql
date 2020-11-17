@@ -429,3 +429,6 @@ CREATE TABLE `tb_commodity`  (
   PRIMARY KEY (`id`)
 );
 
+
+ALTER TABLE `tb_storage_commodity`
+ADD COLUMN `serial_mold` tinyint(1) NULL COMMENT '1ICCID 2cardid' AFTER `commodity_mold`;

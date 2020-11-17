@@ -17,6 +17,8 @@ public class StorageCommodity  extends BasePojo implements java.io.Serializable{
     private Integer sourceId;
 
     private Boolean matchPhone;
+    //1 iccid 2 cardid
+    private Integer serialMold;
     //1有序列号0无序列号
     private Integer commodityMold;
 
@@ -34,8 +36,7 @@ public class StorageCommodity  extends BasePojo implements java.io.Serializable{
     private String serials;
     @Transient
     private List<String> serialList;
-    @Transient
-    private Integer serialMold;
+
 
     public StorageCommodity(Integer storageStockId, String source, Integer sourceId,Integer commodityId, String commodity, Integer quantity) {
         this.storageStockId=storageStockId;

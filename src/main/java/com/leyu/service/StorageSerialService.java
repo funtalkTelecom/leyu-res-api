@@ -9,14 +9,17 @@ import com.leyu.mapper.StorageCommodityMapper;
 import com.leyu.mapper.StorageSerialMapper;
 import com.leyu.pojo.StorageCommodity;
 import com.leyu.pojo.StorageSerial;
+import com.leyu.pojo.StorageStock;
 import com.leyu.utils.Constants;
 import com.leyu.utils.Utils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -24,18 +27,73 @@ public class StorageSerialService extends BaseService {
 	private static Logger log = LogManager.getLogger(StorageSerialService.class);
 	@Autowired private StorageSerialMapper storageSerialMapper;
 	@Autowired private StorageCommodityMapper storageCommodityMapper;
+	@Autowired private StorageStockService storageStockService;
 
     public PageInfo<?> storageSerialPages(StorageSerial storageSerial){
+        Example example=new Example(StorageSerial.class);
+        Example.Criteria criteria=example.createCriteria();
+        example.setOrderByClause(" id desc");
         PageHelper.startPage(storageSerial.getStart(),storageSerial.getLimit());
-        List<StorageSerial> list = this.storageSerialMapper.queryList(storageSerial);
+        List<StorageSerial> list = this.storageSerialMapper.selectByExample(example);
         PageInfo<StorageSerial> pm = new PageInfo<>(list);
         return pm;
     }
 
-    public PageInfo<?> myStorageSerialPages(Integer storageStockId){
-        StorageSerial storageSerial=new StorageSerial();
-        storageSerial.setStorageStockId(storageStockId);
-        return storageSerialPages(storageSerial);
+    public PageInfo<?> myStorageSerialPages(StorageSerial storageSerial){
+        int limit=1000;
+        Example example=new Example(StorageSerial.class);
+        Example.Criteria criteria=example.createCriteria();
+        //1
+        if(storageSerial.getStatus()==null){
+            Object[] status={Constants.SERIAL_STATUS_2.getIntKey(),Constants.SERIAL_STATUS_2.getIntKey(),
+                    Constants.SERIAL_STATUS_3.getIntKey(),Constants.SERIAL_STATUS_4.getIntKey()};
+            criteria.andIn("status", Arrays.asList(status));
+        }else{
+            criteria.andEqualTo("status",storageSerial.getStatus());
+        }
+        //2
+        StorageStock storageStock=new StorageStock();
+        storageStock.setCommodity(storageSerial.getCommodity());
+        storageStock.setStore(storageSerial.getStore());
+        storageStock.setCorpName(storageSerial.getCorpName());
+        List<Object> storageStockIds=new ArrayList<>();
+        int currPage=1;
+        int totalPages=100;
+        while (currPage<=totalPages){
+            storageStock.setStart(currPage);
+            storageStock.setLimit(limit);
+            PageInfo<StorageStock> pageInfo = storageStockService.myStockPages(storageStock);
+            currPage++;
+            totalPages=pageInfo.getPages();
+            for(StorageStock storageStock1:pageInfo.getList()){
+                storageStockIds.add(storageStock1.getId());
+            }
+        }
+        if(!storageStockIds.isEmpty()){
+            criteria.andIn("storageStockId",storageStockIds);
+        }
+        //3
+        if(StringUtils.isNotEmpty(storageSerial.getSerial())){
+            Object[] serialArray=StringUtils.split(storageSerial.getSerial(),"\r\n");
+            criteria.andIn("serial",Arrays.asList(serialArray));
+        }
+
+        example.setOrderByClause(" id desc");
+        PageHelper.startPage(storageSerial.getStart(),storageSerial.getLimit());
+        List<StorageSerial> list = this.storageSerialMapper.selectByExample(example);
+
+        StorageStock storageStock1=null;
+        for(StorageSerial storageSerial1:list){
+            if(storageStock1==null || !storageStock1.getId().equals(storageSerial1.getStorageStockId())){
+                storageStock1=this.storageStockService.findStorageStock(storageSerial1.getStorageStockId());
+            }
+            storageSerial1.setCorpName(storageStock1.getCorpName());
+            storageSerial1.setCommodity(storageStock1.getCommodity());
+            storageSerial1.setStore(storageStock1.getStore());
+        }
+
+        PageInfo<StorageSerial> pm = new PageInfo<>(list);
+        return pm;
     }
 
     /**
@@ -44,6 +102,9 @@ public class StorageSerialService extends BaseService {
      * @return
      */
     public Result updateStorageSerial2Out(Integer outStorageCommodityId){
+        StorageCommodity storageCommodity=storageCommodityMapper.selectByPrimaryKey(outStorageCommodityId);
+        if(storageCommodity.getCommodityMold()!=Constants.COMMODITY_MOLD_SERIAL.getIntKey())return new Result(Result.OK,"非序列管理，无需更新序列表");
+
         StorageSerial storageSerial=new StorageSerial();
         storageSerial.setStatus(Constants.SERIAL_STATUS_4.getIntKey());
 
@@ -52,7 +113,6 @@ public class StorageSerialService extends BaseService {
         criteria.andEqualTo("status",Constants.SERIAL_STATUS_3.getIntKey());
         criteria.andEqualTo("outStorageCommodityId",outStorageCommodityId);
 
-        StorageCommodity storageCommodity=storageCommodityMapper.selectByPrimaryKey(outStorageCommodityId);
         int quantity = storageCommodity.getQuantity();
 
         return this.checkUpdateCountAndExpect(storageSerial,example,quantity);
@@ -65,6 +125,9 @@ public class StorageSerialService extends BaseService {
      * @return
      */
     public Result updateStorageSerial2WaitOut(List<String> serials,Integer outStorageCommodityId){
+        StorageCommodity storageCommodity=storageCommodityMapper.selectByPrimaryKey(outStorageCommodityId);
+        if(storageCommodity.getCommodityMold()!=Constants.COMMODITY_MOLD_SERIAL.getIntKey())return new Result(Result.OK,"非序列管理，无需更新序列表");
+
         StorageSerial storageSerial=new StorageSerial();
         storageSerial.setStatus(Constants.SERIAL_STATUS_3.getIntKey());
         storageSerial.setOutStorageCommodityId(outStorageCommodityId);
@@ -75,7 +138,6 @@ public class StorageSerialService extends BaseService {
         criteria.andEqualTo("status",Constants.SERIAL_STATUS_2.getIntKey());
         criteria.andIn("serial",serialsObject);
 
-        StorageCommodity storageCommodity=storageCommodityMapper.selectByPrimaryKey(outStorageCommodityId);
         int quantity = storageCommodity.getQuantity();
 
         return this.checkUpdateCountAndExpect(storageSerial,example,quantity);
@@ -88,6 +150,7 @@ public class StorageSerialService extends BaseService {
      */
     public Result updateStorageSerial2Del(Integer inStorageCommodityId){
         StorageCommodity storageCommodity=storageCommodityMapper.selectByPrimaryKey(inStorageCommodityId);
+        if(storageCommodity.getCommodityMold()!=Constants.COMMODITY_MOLD_SERIAL.getIntKey())return new Result(Result.OK,"非序列管理，无需更新序列表");
 
         StorageSerial storageSerial=new StorageSerial();
         storageSerial.setStatus(Constants.SERIAL_STATUS_0.getIntKey());
@@ -108,6 +171,7 @@ public class StorageSerialService extends BaseService {
      */
     public Result updateStorageSerial2In(Integer inStorageCommodityId){
         StorageCommodity storageCommodity=storageCommodityMapper.selectByPrimaryKey(inStorageCommodityId);
+        if(storageCommodity.getCommodityMold()!=Constants.COMMODITY_MOLD_SERIAL.getIntKey())return new Result(Result.OK,"非序列管理，无需更新序列表");
 
         StorageSerial storageSerial=new StorageSerial();
         storageSerial.setStatus(Constants.SERIAL_STATUS_2.getIntKey());

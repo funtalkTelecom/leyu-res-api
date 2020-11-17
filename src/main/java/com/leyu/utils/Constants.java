@@ -16,6 +16,10 @@ public enum Constants {
 
     CORP_LY_ID(10, "乐语公司id", "CORP"),
 
+    /**1有序列号0无序列号*/
+    COMMODITY_MOLD_SERIAL(1, "有效", "APPOINT"),
+    COMMODITY_MOLD_NO_SERIAL(0, "无效", "APPOINT"),
+
     /**[有效|无效]/[是|否]*/
     APPOINT_VALID(1, "有效", "APPOINT"),
     APPOINT_INVALID(0, "无效", "APPOINT"),
