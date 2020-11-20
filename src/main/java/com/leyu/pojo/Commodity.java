@@ -33,6 +33,10 @@ public class Commodity extends BasePojo implements java.io.Serializable {
     private Integer sectionCity;
     @Transient
     private String sectionCityStr;
+    @Transient
+    private Integer sectionProvince;
+    @Transient
+    private String sectionProvinceStr;
     /**序列管理(1是0否)*/
     @Range(min = 0, max = 1,message = "请选择序列管理模式",groups ={ValidateGroup.FirstGroup.class})
     private Integer serial;
@@ -174,6 +178,22 @@ public class Commodity extends BasePojo implements java.io.Serializable {
 
     public void setCorpIdStr(String corpIdStr) {
         this.corpIdStr = corpIdStr;
+    }
+
+    public Integer getSectionProvince() {
+        return sectionProvince;
+    }
+
+    public void setSectionProvince(Integer sectionProvince) {
+        this.sectionProvince = sectionProvince;
+    }
+
+    public String getSectionProvinceStr() {
+        return sectionProvinceStr;
+    }
+
+    public void setSectionProvinceStr(String sectionProvinceStr) {
+        this.sectionProvinceStr = sectionProvinceStr;
     }
 
     @Override

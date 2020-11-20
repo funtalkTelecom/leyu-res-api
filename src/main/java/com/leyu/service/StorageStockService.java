@@ -12,6 +12,7 @@ import com.leyu.mapper.StorageStockMapper;
 import com.leyu.mapper.StorageStoreMapper;
 import com.leyu.pojo.*;
 import com.leyu.utils.ApiSessionUtil;
+import com.leyu.utils.Constants;
 import com.leyu.utils.SessionUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -224,6 +226,30 @@ public class StorageStockService extends BaseService {
      */
     public StorageStock findStorageStock(Integer storageStockId){
         return this.storageStockMapper.selectByPrimaryKey(storageStockId);
+    }
+
+    /**
+     * 查询某公司对我服务的库存
+     */
+    public List<StorageStock> findCorpOutStorageStock(Integer corpId){
+        Example example=new Example(StorageStock.class);
+        Example.Criteria criteria=example.createCriteria();
+        criteria.andEqualTo("isDel",false);
+        criteria.andEqualTo("corpId",corpId);
+        StorageStore storageStore = new StorageStore();
+        storageStore.setDel(false);
+        storageStore.setCorpId(corpId);
+        storageStore.setService(Constants.APPOINT_VALID.getIntKey());
+        List<StorageStore> storageStoreList=this.storageStoreMapper.select(storageStore);
+        if(storageStoreList.isEmpty())return new ArrayList<StorageStock>();
+        List<Object> storageStoreIds=new ArrayList<>();
+        for(StorageStore storageStore1:storageStoreList){
+            storageStoreIds.add(storageStore1.getId());
+        }
+        criteria.andIn("storeId",storageStoreIds);
+        example.setOrderByClause(" id desc");
+        List<StorageStock> list = this.storageStockMapper.selectByExample(example);
+        return list;
     }
 
 }

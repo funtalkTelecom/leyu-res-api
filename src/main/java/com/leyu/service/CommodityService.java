@@ -56,7 +56,19 @@ public class CommodityService {
     }
 
     public Commodity get(Integer id){
-        return this.commodityMapper.selectByPrimaryKey(id);
+        Commodity bean=this.commodityMapper.selectByPrimaryKey(id);
+        if(bean.getSectionCity() !=null && bean.getSectionCity()!=-1){
+            City city = this.cityMapper.selectByPrimaryKey(bean.getSectionCity());
+            City province = this.cityMapper.selectByPrimaryKey(bean.getSectionCity());
+            bean.setSectionCityStr(city.getName());
+            bean.setSectionProvince(city.getPid());
+            bean.setSectionProvinceStr(province.getName());
+        }else{
+            bean.setSectionCityStr("不限");
+            bean.setSectionProvince(-1);
+            bean.setSectionProvinceStr("不限");
+        }
+        return bean;
     }
 
     public Result addCommodity(Commodity commodity){
@@ -99,6 +111,5 @@ public class CommodityService {
         this.commodityMapper.updateByPrimaryKey(bean);
         return new Result(Result.OK,"删除成功");
     }
-
 
 }

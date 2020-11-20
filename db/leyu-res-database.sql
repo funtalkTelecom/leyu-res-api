@@ -432,3 +432,70 @@ CREATE TABLE `tb_commodity`  (
 
 ALTER TABLE `tb_storage_commodity`
 ADD COLUMN `serial_mold` tinyint(1) NULL COMMENT '1ICCID 2cardid' AFTER `commodity_mold`;
+
+CREATE TABLE `tb_corp_address`  (
+  `id` int NOT NULL,
+  `corp_id` int NULL COMMENT '归属公司',
+  `person_name` varchar(16) NULL COMMENT '收件人',
+  `person_tel` varchar(11) NULL COMMENT '收件电话',
+  `province` int NULL COMMENT '省',
+  `city` int NULL COMMENT '市',
+  `district` int NULL,
+  `address` varchar(255) NULL COMMENT '街道',
+  `create_date` datetime NULL,
+  `update_date` datetime NULL,
+  `adduser` int NULL,
+  `is_del` tinyint(1) NULL,
+  `is_default` tinyint(1) NULL COMMENT '1默认',
+  `note` varchar(128) NULL,
+  PRIMARY KEY (`id`)
+);
+
+
+CREATE TABLE `tb_commodity_apply`  (
+  `id` int NOT NULL,
+  `agent_corp_id` int NULL COMMENT '代理商ID',
+  `agent_corp_name` varchar(64) NULL COMMENT '代理商名称',
+  `supply_corp_id` int NULL COMMENT '供应商ID',
+  `supply_corp_name` varchar(64) NULL COMMENT '供应名称',
+  `pay_method_id` int NULL COMMENT '支付方式编码',
+  `pay_method` varchar(32) NULL COMMENT '支付方式',
+  `sub_total` decimal(10, 2) NULL COMMENT '子项费用',
+  `shipping_total` decimal(10,2) NULL COMMENT '运费',
+  `commission` decimal(10,2) NULL COMMENT '优惠',
+  `adjust_price` decimal(10, 2) NULL COMMENT '减免',
+  `total` decimal(10,2) NULL COMMENT '总价',
+  `add_note` varchar(255) NULL COMMENT '摘要',
+  `status` tinyint(2) NULL COMMENT '状态',
+  `in_storage` tinyint(1) NULL COMMENT '代理商库存是否入库',
+  `add_date` datetime NULL COMMENT '添加时间',
+  `pay_date` datetime NULL COMMENT '支付时间',
+  `audit_date` datetime NULL COMMENT '审核时间',
+  `pick_date` datetime NULL COMMENT '发货时间',
+  `sign_date` datetime NULL COMMENT '签收时间',
+  `address_id` int NULL COMMENT '地址ID',
+  `person_name` varchar(10) NULL COMMENT '收件人',
+  `person_tel` varchar(16) NULL COMMENT '收件电话',
+  `address` varchar(255) NULL COMMENT '收货地址',
+  `express_id` int NULL COMMENT '快递编码',
+  `express_name` varchar(32) NULL COMMENT '快递公司',
+  `express_number` int NULL COMMENT '快递单号',
+  `is_del` tinyint(1) NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `tb_commodity_apply_item`  (
+  `id` int NOT NULL,
+  `commodity_apply_id` int NULL,
+  `commodity_id` int NULL,
+  `commodity_classify` tinyint(1) NULL,
+  `commodity_name` varchar(64) NULL,
+  `quantity` int(10) NULL,
+  `unit_price` decimal(10, 2) NULL,
+  `price` decimal(10, 2) NULL,
+  PRIMARY KEY (`id`)
+);
+
+
+ALTER TABLE `tb_commodity_apply_item`
+ADD COLUMN `storage_stock_id` int NULL AFTER `commodity_apply_id`;
