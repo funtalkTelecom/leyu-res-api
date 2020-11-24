@@ -51,11 +51,11 @@
                <!--enableUpdateByExample="false" enableDeleteByExample="true" enableSelectByExample="false"-->
                <!--selectByExampleQueryId="false"/>-->
 
-        <table tableName="tb_city" domainObjectName="City" enableSelectByPrimaryKey="true"
-               enableCountByExample="false"  enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false"
-               selectByExampleQueryId="false" enableDeleteByPrimaryKey="false"
-               enableInsert="false"    enableUpdateByPrimaryKey="false" ></table>
+        <!--<table tableName="tb_city" domainObjectName="City" enableSelectByPrimaryKey="true"-->
+               <!--enableCountByExample="false"  enableUpdateByExample="false"-->
+               <!--enableDeleteByExample="false" enableSelectByExample="false"-->
+               <!--selectByExampleQueryId="false" enableDeleteByPrimaryKey="false"-->
+               <!--enableInsert="false"    enableUpdateByPrimaryKey="false" ></table>-->
 
         <table tableName="tb_corporation" domainObjectName="Corporation" enableSelectByPrimaryKey="true"
                enableCountByExample="false"  enableUpdateByExample="false"

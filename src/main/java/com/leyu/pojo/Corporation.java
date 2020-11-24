@@ -1,13 +1,16 @@
 package com.leyu.pojo;
 
-import javax.persistence.Id;
-import javax.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.persistence.*;
 import java.util.Date;
 
 @Table(name = "tb_corporation")
-public class Corporation  extends BasePojo  implements java.io.Serializable{
+public class Corporation  extends BasePojo  implements java.io.Serializable {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String name;
@@ -38,7 +41,11 @@ public class Corporation  extends BasePojo  implements java.io.Serializable{
 
     private String remark;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date addDate;
+
+    @Transient
+    private MultipartFile licenseFile;
 
     public Integer getId() {
         return id;
@@ -168,6 +175,14 @@ public class Corporation  extends BasePojo  implements java.io.Serializable{
         this.addDate = addDate;
     }
 
+    public MultipartFile getLicenseFile() {
+        return licenseFile;
+    }
+
+    public void setLicenseFile(MultipartFile licenseFile) {
+        licenseFile = licenseFile;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -193,4 +208,5 @@ public class Corporation  extends BasePojo  implements java.io.Serializable{
         sb.append("]");
         return sb.toString();
     }
+
 }

@@ -19,9 +19,16 @@
     <result column="remark" jdbcType="VARCHAR" property="remark" />
     <result column="add_date" jdbcType="TIMESTAMP" property="addDate" />
   </resultMap>
+
   <sql id="Base_Column_List">
     id, `name`, short_name, business_license, business_license_img, contacts, phone, 
     email, province, city, district, address, `status`, is_del, remark, add_date
   </sql>
+
+  <select id="queryList" resultType="Corporation">
+    SELECT * FROM tb_corporation t  where 1=1
+    <if test="param!=null and param.name!=null and param.name!=''"> and t.name like "%"#{param.name}"%"</if>
+    ORDER BY id DESC
+  </select>
 
 </mapper>

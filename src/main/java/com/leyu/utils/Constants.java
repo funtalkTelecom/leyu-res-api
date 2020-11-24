@@ -46,6 +46,10 @@ public enum Constants {
     SELL_STATUS_3(3, "已出货", "SELL_STATUS"),
     SELL_STATUS_4(4, "待撤销", "SELL_STATUS"),
     SELL_STATUS_5(5, "已撤销", "SELL_STATUS"),
+
+
+    /**文件上传存储的相对路径*/
+    UPLOAD_PATH_CORP("corp", "营业执照", "UPLOAD_PATH"),
     ;
 
     private Object key;

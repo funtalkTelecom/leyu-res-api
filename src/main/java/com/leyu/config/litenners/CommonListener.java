@@ -31,7 +31,7 @@ public class CommonListener implements ApplicationRunner {
 		log.info("进行了 权限表检查+++++++++++++++++++++++++++++++++++++++++++++++");
 //		permissionService.checkOrInsertPermission();
 		log.info("系统配置初始化+++++++++++++++++++++++++++++++++++++++++++++++");
-//		systemParam.load1();
+		systemParam.load1();
 		log.info("ContextUtils组件初始化+++++++++++++++++++++++++++++++++++++++++++++++");
 		ApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
 		ContextUtils.setContext(ctx);
