@@ -1,9 +1,6 @@
 package com.leyu.pojo;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -40,6 +37,10 @@ public class StorageStock  extends BasePojo implements java.io.Serializable{
     private Date addDate;
 
     private Boolean isDel;
+
+    @Transient
+    /**序列管理(1是0否)*/
+    private Integer commodityMold;
 
     public StorageStock(Integer id, Integer corpId, String corpName, Integer commodityId, String commodity, Integer storeId, String store, Integer totalQuantity, Integer usableQuantity, Integer freezeQuantity, BigDecimal costPrice, BigDecimal retail1Price, String note, Date addDate, Boolean isDel) {
         this.id = id;
@@ -181,5 +182,13 @@ public class StorageStock  extends BasePojo implements java.io.Serializable{
 
     public void setIsDel(Boolean isDel) {
         this.isDel = isDel;
+    }
+
+    public Integer getCommodityMold() {
+        return commodityMold;
+    }
+
+    public void setCommodityMold(Integer commodityMold) {
+        this.commodityMold = commodityMold;
     }
 }

@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/store")
 public class StorageStoreController {
@@ -33,6 +35,12 @@ public class StorageStoreController {
 	@RequestMapping("/{storeId}")
 	public Result getStore(@PathVariable("storeId") Integer storeId) {
 		StorageStore storageStore=storageStoreService.getStore(storeId);
+		return new Result(Result.OK,storageStore);
+	}
+
+	@RequestMapping("/corp")
+	public Result corpStore() {
+		List<StorageStore> storageStore=storageStoreService.myStores();
 		return new Result(Result.OK,storageStore);
 	}
 

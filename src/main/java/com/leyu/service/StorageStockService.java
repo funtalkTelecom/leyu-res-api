@@ -1,15 +1,20 @@
 package com.leyu.service;
 
+import com.github.abel533.entity.Example;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.leyu.config.advice.ServiceException;
 import com.leyu.config.utils.RedissonService;
 import com.leyu.dto.Result;
+import com.leyu.mapper.CommodityMapper;
+import com.leyu.mapper.CorporationMapper;
 import com.leyu.mapper.StorageStockMapper;
 import com.leyu.mapper.StorageStoreMapper;
-import com.leyu.pojo.StorageStock;
-import com.leyu.pojo.StorageStore;
+import com.leyu.pojo.*;
+import com.leyu.utils.ApiSessionUtil;
+import com.leyu.utils.Constants;
 import com.leyu.utils.SessionUtil;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.redisson.api.RLock;
@@ -17,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -25,29 +31,52 @@ public class StorageStockService extends BaseService {
 	private static Logger log = LogManager.getLogger(StorageStockService.class);
 	@Autowired private StorageStockMapper storageStockMapper;
 	@Autowired private StorageStoreMapper storageStoreMapper;
+	@Autowired private CorporationMapper corporationMapper;
+	@Autowired private CommodityMapper commodityMapper;
     @Autowired private RedissonService redissonService;
+    @Autowired private ApiSessionUtil apiSessionUtil;
 
-    public PageInfo<?> stockPages(StorageStock storageStock){
-        storageStock.setIsDel(false);
+    public PageInfo<StorageStock> stockPages(StorageStock storageStock){
+        Example example=new Example(StorageStock.class);
+        Example.Criteria criteria=example.createCriteria();
+        criteria.andEqualTo("isDel",false);
+        if(storageStock.getCorpId()!=null){
+            criteria.andEqualTo("corpId",storageStock.getCorpId());
+        }
+        if(StringUtils.isNotEmpty(storageStock.getCorpName())){
+            String name="%"+storageStock.getCorpName()+"%";
+            criteria.andLike("corpName",name);
+        }
+        if(StringUtils.isNotEmpty(storageStock.getStore())){
+            String name="%"+storageStock.getStore()+"%";
+            criteria.andLike("store",name);
+        }
+        if(StringUtils.isNotEmpty(storageStock.getCommodity())){
+            String name="%"+storageStock.getCommodity()+"%";
+            criteria.andLike("commodity",name);
+        }
+        example.setOrderByClause(" id desc");
         PageHelper.startPage(storageStock.getStart(),storageStock.getLimit());
-        List<StorageStock> list = this.storageStockMapper.queryList(storageStock);
+        List<StorageStock> list = this.storageStockMapper.selectByExample(example);
         PageInfo<StorageStock> pm = new PageInfo<>(list);
         return pm;
     }
 
-    public PageInfo<?> myStockPages(StorageStock storageStock){
-        storageStock.setCorpId(SessionUtil.getUserId());//TODO
+    public PageInfo<StorageStock> myStockPages(StorageStock storageStock){
+        storageStock.setCorpId(apiSessionUtil.getUser().getCorpId());
         return stockPages(storageStock);
     }
 
 
-    public StorageStock findStorageStock(Integer commodityId,Integer storeId){//TODO 加锁
-        StorageStock bean=this.findStorageStock(SessionUtil.getUserId(),commodityId,storeId);//TODO
+    public StorageStock initOrFindStorageStock(Integer commodityId,Integer storeId){//TODO 加锁
+        StorageStock bean=this.findStorageStock(apiSessionUtil.getUser().getCorpId(),commodityId,storeId);
         if(bean != null){
+            Commodity commodity=this.commodityMapper.selectByPrimaryKey(commodityId);
+            bean.setCommodityMold(commodity.getSerial());
             return bean;
         }else{
-            this.initStorageStock(SessionUtil.getUserId(),commodityId,storeId);//TODO
-            return this.findStorageStock(commodityId,storeId);
+            this.initStorageStock(apiSessionUtil.getUser().getCorpId(),commodityId,storeId);
+            return this.initOrFindStorageStock(commodityId,storeId);
         }
     }
 
@@ -157,9 +186,11 @@ public class StorageStockService extends BaseService {
         storageStock.setFreezeQuantity(0);
         storageStock.setUsableQuantity(0);
         storageStock.setCorpId(corpId);
-//        storageStock.setCorpName();
+        Corporation corporation = corporationMapper.selectByPrimaryKey(storageStock.getCorpId());
+        storageStock.setCorpName(corporation.getShortName());
         storageStock.setCommodityId(commodityId);
-//        storageStock.setCommodity();
+        Commodity commodity = commodityMapper.selectByPrimaryKey(storageStock.getCommodityId());
+        storageStock.setCommodity(commodity.getName());
         storageStock.setStoreId(storeId);
         StorageStore storageStore=storageStoreMapper.selectByPrimaryKey(storeId);
         storageStock.setStore(storageStore.getName());
@@ -195,6 +226,30 @@ public class StorageStockService extends BaseService {
      */
     public StorageStock findStorageStock(Integer storageStockId){
         return this.storageStockMapper.selectByPrimaryKey(storageStockId);
+    }
+
+    /**
+     * 查询某公司对我服务的库存
+     */
+    public List<StorageStock> findCorpOutStorageStock(Integer corpId){
+        Example example=new Example(StorageStock.class);
+        Example.Criteria criteria=example.createCriteria();
+        criteria.andEqualTo("isDel",false);
+        criteria.andEqualTo("corpId",corpId);
+        StorageStore storageStore = new StorageStore();
+        storageStore.setDel(false);
+        storageStore.setCorpId(corpId);
+        storageStore.setService(Constants.APPOINT_VALID.getIntKey());
+        List<StorageStore> storageStoreList=this.storageStoreMapper.select(storageStore);
+        if(storageStoreList.isEmpty())return new ArrayList<StorageStock>();
+        List<Object> storageStoreIds=new ArrayList<>();
+        for(StorageStore storageStore1:storageStoreList){
+            storageStoreIds.add(storageStore1.getId());
+        }
+        criteria.andIn("storeId",storageStoreIds);
+        example.setOrderByClause(" id desc");
+        List<StorageStock> list = this.storageStockMapper.selectByExample(example);
+        return list;
     }
 
 }

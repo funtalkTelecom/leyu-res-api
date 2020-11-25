@@ -5,6 +5,8 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.leyu.dto.Result;
+import com.leyu.mapper.CorporationMapper;
+import com.leyu.pojo.Corporation;
 import com.leyu.utils.*;
 import com.leyu.mapper.UserMapper;
 import com.leyu.pojo.User;
@@ -246,6 +248,12 @@ public class UserService extends BaseService {
 		if(count != 1) return new Result(Result.ERROR,"修改用户状态失败!");
 		return new Result(Result.OK, "修改用户状态成功!");
 
+	}
+
+	@Autowired private CorporationMapper corporationMapper;
+	public List<Corporation> queryCorpList(){
+		List<Corporation> list=corporationMapper.select(new Corporation());
+		return list;
 	}
 
 

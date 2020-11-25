@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Configuration
-@EnableRedisHttpSession
+@EnableRedisHttpSession(maxInactiveIntervalInSeconds=43200)
 public class RedisConfig extends CachingConfigurerSupport {
 	Logger log = LoggerFactory.getLogger(this.getClass());
 	

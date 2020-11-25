@@ -39,8 +39,21 @@ public class StorageCommodityService extends BaseService {
      * @return
      */
     public StorageCommodity addStorageCommodity(String source, Integer sourceId,Integer storageStockId,Integer quantity){
+        return this.addStorageCommodity(source,sourceId,storageStockId,quantity,-1,-1);
+    }
+    /**
+     * 添加一个商品
+     * @param source 详见Constants.COMMODITY_SOURCE_*
+     * @param sourceId  单据id
+     * @param storageStockId    库存单号
+     * @param quantity  数量
+     * @return
+     */
+    public StorageCommodity addStorageCommodity(String source, Integer sourceId,Integer storageStockId,Integer quantity,Integer commodityMold,Integer serialMold){
         StorageStock storageStock = storageStockMapper.selectByPrimaryKey(storageStockId);
         StorageCommodity storageCommodity=new StorageCommodity(storageStockId,source,sourceId,storageStock.getCommodityId(),storageStock.getCommodity(),quantity);
+        storageCommodity.setSerialMold(serialMold);
+        storageCommodity.setCommodityMold(commodityMold);
         int updateCount = this.storageCommodityMapper.insertSelective(storageCommodity);
         log.info("添加一个业务商品单{}，结果：",storageCommodity.getId(),(updateCount==1));
         return storageCommodity;

@@ -35,6 +35,8 @@ public class User extends BasePojo implements java.io.Serializable {
     private Date lastLoginTime;
     private String status;
     private Integer fromId;
+    @Transient
+    private Integer corpId;
 
     @Transient
     private List<Role> userRoles = new ArrayList<Role>();
@@ -216,4 +218,11 @@ public class User extends BasePojo implements java.io.Serializable {
 
     public void setRoleIdsSelected(Integer[] roleIdsSelected) { this.roleIdsSelected = roleIdsSelected; }
 
+    public Integer getCorpId() {
+        return corpId;
+    }
+
+    public void setCorpId(Integer corpId) {
+        this.corpId = corpId;
+    }
 }

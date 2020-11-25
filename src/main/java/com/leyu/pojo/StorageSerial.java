@@ -2,6 +2,7 @@ package com.leyu.pojo;
 
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Table(name = "tb_storage_serial")
 public class StorageSerial  extends BasePojo implements java.io.Serializable{
@@ -23,6 +24,13 @@ public class StorageSerial  extends BasePojo implements java.io.Serializable{
     private Integer inStorageCommodityId;
 
     private Integer outStorageCommodityId;
+
+    @Transient
+    private String corpName;
+    @Transient
+    private String commodity;
+    @Transient
+    private String store;
 
     public StorageSerial(Integer storageStockId, Integer mold, String serial, Integer quantity, Integer freeze, Integer status, Integer inStorageCommodityId) {
         this.storageStockId = storageStockId;
@@ -120,5 +128,29 @@ public class StorageSerial  extends BasePojo implements java.io.Serializable{
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getCorpName() {
+        return corpName;
+    }
+
+    public void setCorpName(String corpName) {
+        this.corpName = corpName;
+    }
+
+    public String getCommodity() {
+        return commodity;
+    }
+
+    public void setCommodity(String commodity) {
+        this.commodity = commodity;
+    }
+
+    public String getStore() {
+        return store;
+    }
+
+    public void setStore(String store) {
+        this.store = store;
     }
 }

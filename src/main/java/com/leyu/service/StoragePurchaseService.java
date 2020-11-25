@@ -1,14 +1,16 @@
 package com.leyu.service;
 
+import com.github.abel533.entity.Example;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.leyu.config.advice.ServiceException;
 import com.leyu.dto.Result;
+import com.leyu.mapper.CorporationMapper;
 import com.leyu.mapper.StoragePurchaseMapper;
 import com.leyu.mapper.StorageStockMapper;
-import com.leyu.pojo.StorageCommodity;
-import com.leyu.pojo.StoragePurchase;
-import com.leyu.pojo.StorageStock;
+import com.leyu.mapper.StorageStoreMapper;
+import com.leyu.pojo.*;
+import com.leyu.utils.ApiSessionUtil;
 import com.leyu.utils.Constants;
 import com.leyu.utils.SessionUtil;
 import org.apache.commons.lang.ArrayUtils;
@@ -30,14 +32,49 @@ public class StoragePurchaseService extends BaseService {
 	@Autowired private StorageSerialService storageSerialService;
 	@Autowired private StorageStockService storageStockService;
 	@Autowired private StorageStockMapper storageStockMapper;
+	@Autowired private StorageStoreMapper storageStoreMapper;
+	@Autowired private CorporationMapper corporationMapper;
+	@Autowired private ApiSessionUtil apiSessionUtil;
 
     public PageInfo<?> storageSerialPages(StoragePurchase storagePurchase){
+        Example example=new Example(StoragePurchase.class);
+        Example.Criteria criteria=example.createCriteria();
+        criteria.andEqualTo("isDel",false);
+        criteria.andEqualTo("purchaseCorpId",apiSessionUtil.getUser().getCorpId());
+        if(StringUtils.isNotEmpty(storagePurchase.getSupplyCorp())){
+            String name="%"+storagePurchase.getSupplyCorp()+"%";
+            criteria.andLike("supplyCorp",name);
+        }
+        if(StringUtils.isNotEmpty(storagePurchase.getStore())){
+            String name="%"+storagePurchase.getStore()+"%";
+            criteria.andLike("store",name);
+        }
+        example.setOrderByClause(" id desc");
         PageHelper.startPage(storagePurchase.getStart(),storagePurchase.getLimit());
-        List<StoragePurchase> list = this.storagePurchaseMapper.select(storagePurchase);
+        List<StoragePurchase> list = this.storagePurchaseMapper.selectByExample(example);
         PageInfo<StoragePurchase> pm = new PageInfo<>(list);
         return pm;
     }
 
+    /**
+     * 查询采购单的信息
+     * @param storagePurchaseId
+     * @return
+     */
+    public StoragePurchase get(Integer storagePurchaseId){
+        StoragePurchase storagePurchase = this.storagePurchaseMapper.selectByPrimaryKey(storagePurchaseId);
+        List<StorageCommodity> storageCommodities=this.storageCommodityService.findStorageCommodity(Constants.COMMODITY_SOURCE_PURCHASE.getStringKey(),storagePurchaseId);
+        for (StorageCommodity storageCommodity:storageCommodities) {
+            List<StorageSerial> storageSerials = this.storageSerialService.findByInStorageCommodityId(storageCommodity.getId());
+            List<String> serials=new ArrayList<>();
+            for (StorageSerial storageSerial:storageSerials) {
+                serials.add(storageSerial.getSerial());
+            }
+            storageCommodity.setSerialList(serials);
+        }
+        storagePurchase.setStorageCommodityList(storageCommodities);
+        return storagePurchase;
+    }
     /**
      * 预入库
      * @return
@@ -88,11 +125,15 @@ public class StoragePurchaseService extends BaseService {
         //Integer mold, Integer supplyCorpId, String supplyCorp, Integer purchaseCorpId, String purchaseCorp, Integer storeId, Integer status, Integer applicant, Date applyDate, String applyNote
         addPurchase.setMold(storagePurchase.getMold());
         addPurchase.setPurchaseCorpId(storagePurchase.getPurchaseCorpId());
-        addPurchase.setPurchaseCorp("TODO");
+        Corporation corporation = corporationMapper.selectByPrimaryKey(addPurchase.getPurchaseCorpId());
+        addPurchase.setPurchaseCorp(corporation.getName());
         addPurchase.setSupplyCorpId(storagePurchase.getSupplyCorpId());
-        addPurchase.setSupplyCorp("TODO");
+        corporation = corporationMapper.selectByPrimaryKey(addPurchase.getSupplyCorpId());
+        addPurchase.setSupplyCorp(corporation.getName());
         addPurchase.setStoreId(storagePurchase.getStoreId());
-        addPurchase.setApplicant(SessionUtil.getUserId());
+        StorageStore storageStore = this.storageStoreMapper.selectByPrimaryKey(addPurchase.getStoreId());
+        addPurchase.setStore(storageStore.getName());
+        addPurchase.setApplicant(apiSessionUtil.getUser().getId());
         addPurchase.setApplyDate(new Date());
         addPurchase.setApplyNote(storagePurchase.getApplyNote());
         addPurchase.setStatus(Constants.PURCHASE_STATUS_1.getIntKey());
@@ -104,7 +145,8 @@ public class StoragePurchaseService extends BaseService {
             List<String> serialList=storageCommodity.getSerialList();
             Integer commodityMold=storageCommodity.getCommodityMold();
             Integer serialMold=storageCommodity.getSerialMold();
-            StorageCommodity addstorageCommodity=this.storageCommodityService.addStorageCommodity(Constants.COMMODITY_SOURCE_PURCHASE.getStringKey(),addPurchase.getId(),storageCommodity.getStorageStockId(),storageCommodity.getQuantity());
+            StorageCommodity addstorageCommodity=this.storageCommodityService.
+                    addStorageCommodity(Constants.COMMODITY_SOURCE_PURCHASE.getStringKey(),addPurchase.getId(),storageCommodity.getStorageStockId(),storageCommodity.getQuantity(),commodityMold,serialMold);
             if(commodityMold==1){
                 log.info("添加单据的序列码");
                 this.storageSerialService.addStorageSerial2WaitIn(addstorageCommodity.getId(),serialMold,serialList);

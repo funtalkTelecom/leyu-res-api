@@ -78,7 +78,9 @@ public class ApiSessionUtil {
         if(token==null)return null;
         String key = getApiKey(token);
         if (redisUtils.get(key) == null) return  null;
-        return JsonUtil.string2Obj(redisUtils.get(key).toString(),User.class);
+        User user=JsonUtil.string2Obj(redisUtils.get(key).toString(),User.class);
+        user.setCorpId(1);
+        return user;
     }
 
     public void saveSessionKey(String apiKey,String SessionKey) {

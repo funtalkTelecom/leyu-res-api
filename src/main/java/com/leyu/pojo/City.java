@@ -2,6 +2,9 @@ package com.leyu.pojo;
 
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.util.ArrayList;
+import java.util.List;
 
 @Table(name = "tb_city")
 public class City  extends BasePojo  implements java.io.Serializable {
@@ -24,6 +27,8 @@ public class City  extends BasePojo  implements java.io.Serializable {
     private String zipCode;
 
     private String areaCode;
+    @Transient
+    private List<City> children=new ArrayList<>();
 
     public Integer getId() {
         return id;
@@ -95,6 +100,14 @@ public class City  extends BasePojo  implements java.io.Serializable {
 
     public void setAreaCode(String areaCode) {
         this.areaCode = areaCode;
+    }
+
+    public List<City> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<City> children) {
+        this.children = children;
     }
 
     @Override
